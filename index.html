@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lunar Constraint Map</title>
+    <title>Lunar Constraint Map - Planning Mode</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -199,6 +199,36 @@
             border: 1px solid rgba(255,255,255,0.2);
             margin-left: -4px;
         }
+        .user-site-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            font-size: 0.82rem;
+            color: #bbb;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-left: 2px solid transparent;
+            padding-left: 4px;
+        }
+        .user-site-item:hover { color: #fff; }
+        .user-site-item .color-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-site-item .tier-badge {
+            font-size: 0.6rem;
+            padding: 1px 6px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #667;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-site-item .delete-btn {
+            background: none; border: none; color: #667; cursor: pointer;
+            font-size: 0.9rem; padding: 0 4px; transition: color 0.2s;
+        }
+        .user-site-item .delete-btn:hover { color: #ff5555; }
         #gear {
             position: absolute; top: 20px; right: 20px; z-index: 30;
             font-size: 0.9rem; font-weight: bold; color: #fff;
@@ -210,8 +240,17 @@
         }
         #gear:hover { background: rgba(60,60,120,0.9); border-color: #aaccff; transform: scale(1.05); }
         #gear input { display: none; }
-        #help-btn {
+        #planning-btn {
             position: absolute; top: 20px; right: 125px; z-index: 30;
+            font-size: 0.9rem; font-weight: bold; color: #fff;
+            background: rgba(20,20,40,0.85); backdrop-filter: blur(4px);
+            padding: 8px 14px; border-radius: 20px; cursor: pointer;
+            border: 1px solid #6688aa; transition: background 0.2s, transform 0.2s;
+            user-select: none; display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+        }
+        #planning-btn:hover { background: rgba(60,60,120,0.9); border-color: #aaccff; transform: scale(1.05); }
+        #help-btn {
+            position: absolute; top: 20px; right: 230px; z-index: 30;
             font-size: 0.9rem; font-weight: bold; color: #fff;
             background: rgba(20,20,40,0.85); backdrop-filter: blur(4px);
             padding: 8px 14px; border-radius: 20px; cursor: pointer;
@@ -231,7 +270,7 @@
             background: rgba(12, 15, 30, 0.96); border: 1px solid #6688aa;
             border-radius: 12px; width: 90%; max-width: 650px; height: 80vh; max-height: 550px;
             display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.8);
         }
         .help-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -342,7 +381,7 @@
         }
         .slider-value { min-width: 32px; text-align: center; color: #ddd; font-size: 0.9rem; }
 
-        /* Info Display (bottom-right) with collapse functionality - hidden by default */
+        /* Info Display (bottom-right) */
         #info-display {
             position: absolute; bottom: 24px; right: 24px;
             color: rgba(255,255,255,0.75);
@@ -379,16 +418,10 @@
             font-weight: bold;
         }
         #info-toggle-btn:hover { color: #fff; }
-        #info-display-body {
-            display: block;
-        }
-        #info-display.collapsed #info-display-body {
-            display: none;
-        }
+        #info-display-body { display: block; }
+        #info-display.collapsed #info-display-body { display: none; }
         #info-display.collapsed #info-display-header {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+            margin-bottom: 0; padding-bottom: 0; border-bottom: none;
         }
         #info-display .label { color: #99b; margin-right: 8px; display: inline-block; min-width: 44px; }
         #info-display .value { color: #dde; font-weight: bold; }
@@ -432,9 +465,7 @@
             margin-bottom: 4px;
             font-family: 'Courier New', Courier, monospace;
         }
-        .hud-row:last-child {
-            margin-bottom: 0;
-        }
+        .hud-row:last-child { margin-bottom: 0; }
         .hud-label {
             color: #8899aa;
             font-weight: 600;
@@ -461,11 +492,7 @@
         .hud-status-container::-webkit-scrollbar { width: 3px; }
         .hud-status-container::-webkit-scrollbar-thumb { background: #55aaff; border-radius: 3px; }
         .hud-status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-top: 4px;
-            flex-shrink: 0;
+            width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             background-color: #4a8;
             box-shadow: 0 0 6px rgba(68, 170, 136, 0.6);
@@ -491,18 +518,13 @@
             font-size: 0.85rem;
             margin-bottom: 2px;
         }
-        .hud-feature-dist {
-            font-size: 0.72rem;
-            color: #88aacc;
-            margin-bottom: 4px;
-        }
         .hud-detail-line {
             color: #cccccc;
             font-size: 0.75rem;
             margin-top: 2px;
         }
 
-        /* State Legend Panel (bottom-right) */
+        /* State Legend Panel */
         #state-legend-panel {
             position: absolute;
             bottom: 24px;
@@ -550,10 +572,222 @@
             color: #ddd;
         }
         .state-legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
+            width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+        }
+
+        /* Planning Modal */
+        #planning-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px);
+            z-index: 50; display: none; align-items: center; justify-content: center;
+        }
+        #planning-modal-overlay.visible { display: flex; }
+        #planning-modal {
+            background: rgba(12, 15, 30, 0.96); border: 1px solid #55aaff;
+            border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.8);
+        }
+        .planning-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 20px; border-bottom: 1px solid #445566;
             flex-shrink: 0;
+        }
+        .planning-header .title {
+            font-size: 1.1rem; font-weight: bold; color: #55ff88;
+            letter-spacing: 0.5px;
+        }
+        .planning-header .close-btn {
+            background: none; border: none; color: #889; font-size: 1.4rem;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .planning-header .close-btn:hover { color: #fff; }
+        .planning-body {
+            padding: 20px 24px; overflow-y: auto; flex: 1;
+        }
+        .planning-body::-webkit-scrollbar { width: 4px; }
+        .planning-body::-webkit-scrollbar-thumb { background: #445566; border-radius: 4px; }
+        .planning-body .form-group {
+            margin-bottom: 14px;
+        }
+        .planning-body .form-group label {
+            display: block; font-size: 0.85rem; color: #99b; margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .planning-body .form-group input,
+        .planning-body .form-group select,
+        .planning-body .form-group textarea {
+            width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.06);
+            border: 1px solid #445566; border-radius: 6px; color: #fff;
+            font-size: 0.9rem; transition: border-color 0.2s;
+        }
+        .planning-body .form-group input:focus,
+        .planning-body .form-group select:focus,
+        .planning-body .form-group textarea:focus {
+            outline: none; border-color: #55aaff;
+        }
+        .planning-body .form-group input:disabled {
+            opacity: 0.5; cursor: not-allowed;
+        }
+        .planning-body .form-group select option {
+            background: #1a1a2e;
+        }
+        .planning-body .form-group textarea {
+            resize: vertical; min-height: 60px; font-family: Arial, sans-serif;
+        }
+        .planning-body .form-group .hint {
+            font-size: 0.75rem; color: #667; margin-top: 3px;
+        }
+        .planning-body .form-group .current-loc {
+            background: rgba(85,170,255,0.08);
+            border: 1px solid rgba(85,170,255,0.2);
+            border-radius: 6px; padding: 6px 12px;
+            font-size: 0.85rem; color: #77ccff;
+            text-align: center;
+        }
+        .planning-body .form-row {
+            display: flex; gap: 12px;
+        }
+        .planning-body .form-row .form-group { flex: 1; }
+        .planning-footer {
+            padding: 12px 24px; border-top: 1px solid #445566;
+            display: flex; justify-content: flex-end; gap: 12px;
+            flex-shrink: 0;
+        }
+        .planning-footer .btn {
+            padding: 8px 20px; border-radius: 6px; border: none;
+            font-size: 0.9rem; font-weight: bold; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .planning-footer .btn-primary {
+            background: #55aaff; color: #fff;
+        }
+        .planning-footer .btn-primary:hover { background: #77ccff; }
+        .planning-footer .btn-secondary {
+            background: rgba(255,255,255,0.1); color: #aaa;
+        }
+        .planning-footer .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+        /* Conflict Report Modal */
+        #conflict-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+            z-index: 60; display: none; align-items: center; justify-content: center;
+        }
+        #conflict-modal-overlay.visible { display: flex; }
+        #conflict-modal {
+            background: rgba(12, 15, 30, 0.96); border: 1px solid #ffaa55;
+            border-radius: 12px; width: 90%; max-width: 600px; max-height: 85vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.8);
+        }
+        .conflict-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 20px; border-bottom: 1px solid #445566;
+            flex-shrink: 0;
+        }
+        .conflict-header .title {
+            font-size: 1.1rem; font-weight: bold; color: #ffaa55;
+            letter-spacing: 0.5px;
+        }
+        .conflict-header .close-btn {
+            background: none; border: none; color: #889; font-size: 1.4rem;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .conflict-header .close-btn:hover { color: #fff; }
+        .conflict-body {
+            padding: 20px 24px; overflow-y: auto; flex: 1;
+        }
+        .conflict-body::-webkit-scrollbar { width: 4px; }
+        .conflict-body::-webkit-scrollbar-thumb { background: #445566; border-radius: 4px; }
+        .conflict-summary {
+            background: rgba(255,255,255,0.05); border-radius: 8px;
+            padding: 14px; margin-bottom: 16px;
+            border-left: 3px solid #55aaff;
+        }
+        .conflict-summary h4 {
+            margin: 0 0 8px 0; color: #55aaff;
+        }
+        .conflict-item {
+            background: rgba(255,255,255,0.03); border-radius: 6px;
+            padding: 10px 14px; margin-bottom: 8px;
+            border-left: 3px solid #667;
+        }
+        .conflict-item.severity-high { border-left-color: #ff5555; }
+        .conflict-item.severity-medium { border-left-color: #ffaa55; }
+        .conflict-item.severity-low { border-left-color: #55ff88; }
+        .conflict-item .item-title { font-weight: bold; color: #ddd; }
+        .conflict-item .item-detail { font-size: 0.85rem; color: #99b; margin-top: 2px; }
+        .conflict-item .item-article {
+            display: inline-block; background: rgba(85,170,255,0.15);
+            padding: 1px 10px; border-radius: 12px; font-size: 0.75rem;
+            color: #77ccff; margin-top: 4px;
+        }
+        .conflict-footer {
+            padding: 12px 24px; border-top: 1px solid #445566;
+            display: flex; justify-content: flex-end; gap: 12px;
+            flex-shrink: 0;
+        }
+        .conflict-footer .btn {
+            padding: 8px 20px; border-radius: 6px; border: none;
+            font-size: 0.9rem; font-weight: bold; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .conflict-footer .btn-primary {
+            background: #55ff88; color: #000;
+        }
+        .conflict-footer .btn-primary:hover { background: #77ffaa; }
+        .conflict-footer .btn-secondary {
+            background: rgba(255,255,255,0.1); color: #aaa;
+        }
+        .conflict-footer .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+        /* Crosshair */
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #crosshair.visible { opacity: 0.6; }
+        #crosshair .outer {
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(85, 255, 136, 0.6);
+            border-radius: 50%;
+            position: relative;
+        }
+        #crosshair .inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: rgba(85, 255, 136, 0.8);
+            border-radius: 50%;
+        }
+        #crosshair .line-h {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 1px;
+            background: rgba(85, 255, 136, 0.4);
+        }
+        #crosshair .line-v {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1px;
+            height: 18px;
+            background: rgba(85, 255, 136, 0.4);
         }
 
         @media (max-width: 500px) {
@@ -561,18 +795,32 @@
             #layers-panel { top: 10px; left: 10px; padding: 10px 12px; min-width: 180px; max-width: 280px; font-size: 0.8rem; }
             #layers-panel .title { font-size: 0.9rem; }
             #gear { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 10px; }
-            #help-btn { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 105px; }
+            #planning-btn { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 105px; }
+            #help-btn { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 185px; }
             #settings-panel { right: 10px; top: 50px; min-width: 160px; padding: 12px 14px; }
             #info-display { font-size: 0.75rem; padding: 6px 10px; bottom: 16px; right: 16px; min-width: 110px; }
             #info-display .label { min-width: 32px; }
             #centre-overlap-display { font-size: 0.75rem; padding: 6px 10px; bottom: 16px; left: 16px; min-width: 100px; max-width: 200px; }
             #centre-overlap-display .label { min-width: 32px; }
             #layers-toggle { top: 10px; left: 10px; font-size: 0.85rem; padding: 6px 10px; }
+            .planning-body .form-row { flex-direction: column; gap: 0; }
+            #crosshair .outer { width: 20px; height: 20px; }
+            #crosshair .line-h { width: 12px; }
+            #crosshair .line-v { height: 12px; }
         }
     </style>
 </head>
 <body>
     <div id="message" class="hidden">Ready</div>
+
+    <!-- Crosshair -->
+    <div id="crosshair">
+        <div class="outer">
+            <div class="inner"></div>
+            <div class="line-h"></div>
+            <div class="line-v"></div>
+        </div>
+    </div>
 
     <!-- Layers panel -->
     <div id="layers-panel">
@@ -584,34 +832,33 @@
             <button class="close-btn" id="layers-close" title="Close layers panel">X</button>
         </div>
         <div id="layer-list"></div>
+        <div id="user-sites-list" style="margin-top:12px;border-top:1px solid #445566;padding-top:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:0.85rem;font-weight:bold;color:#55ff88;">📋 Planning</span>
+                <button id="clear-user-sites" style="background:none;border:none;color:#667;font-size:0.75rem;cursor:pointer;padding:2px 8px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.color='#ff5555'" onmouseout="this.style.color='#667'">Clear All</button>
+            </div>
+            <div id="user-sites-container"></div>
+        </div>
     </div>
 
     <div id="layers-toggle" title="Show layers">Layers</div>
 
-    <!-- Centre overlap display (bottom-left telemetry HUD) -->
+    <!-- Centre overlap display -->
     <div id="centre-overlap-display">
-        <div class="hud-header">
-            <span>⊕ LUNAR TELEMETRY</span>
-        </div>
-        <div class="hud-row">
-            <span class="hud-label">LAT:</span>
-            <span class="hud-val" id="centre-lat">0.00° N</span>
-        </div>
-        <div class="hud-row">
-            <span class="hud-label">LON:</span>
-            <span class="hud-val" id="centre-lon">0.00° E</span>
-        </div>
+        <div class="hud-header"><span>⊕ LUNAR TELEMETRY</span></div>
+        <div class="hud-row"><span class="hud-label">LAT:</span><span class="hud-val" id="centre-lat">0.00° N</span></div>
+        <div class="hud-row"><span class="hud-label">LON:</span><span class="hud-val" id="centre-lon">0.00° E</span></div>
         <div class="hud-status-container">
             <span class="hud-status-dot" id="hud-status-dot"></span>
             <span id="centre-overlap-text">Open</span>
         </div>
     </div>
 
-    <!-- Info display (bottom-right) -->
+    <!-- Info display -->
     <div id="info-display">
         <div id="info-display-header">
             <span class="title">INFO</span>
-            <button id="info-toggle-btn" title="Collapse/Expand info panel">[-]</button>
+            <button id="info-toggle-btn" title="Collapse/Expand">[-]</button>
         </div>
         <div id="info-display-body">
             <div><span class="label">Dist</span><span class="value" id="dist">0.00</span></div>
@@ -622,177 +869,247 @@
         </div>
     </div>
 
-    <!-- State Responsibility Legend Panel (Visible when State Mode ON) -->
+    <!-- State Legend Panel -->
     <div id="state-legend-panel">
-        <div class="state-legend-title">
-            <span>Art. VI State Parties</span>
-            <span style="font-size: 0.75rem; color: #aaa;">OST Map</span>
-        </div>
+        <div class="state-legend-title"><span>Art. VI State Parties</span><span style="font-size:0.75rem;color:#aaa;">OST Map</span></div>
         <div class="state-legend-list" id="state-legend-list"></div>
     </div>
 
-    <!-- Help Button & Modal -->
+    <!-- Planning Modal -->
+    <div id="planning-modal-overlay">
+        <div id="planning-modal">
+            <div class="planning-header">
+                <span class="title">📌 New Planned Site</span>
+                <button class="close-btn" id="planning-close-btn" title="Close">X</button>
+            </div>
+            <div class="planning-body">
+                <div class="form-group">
+                    <label>📍 Current Camera Location</label>
+                    <div class="current-loc" id="current-location-display">Loading...</div>
+                    <div class="hint">Site will be placed at the center of your view</div>
+                </div>
+                <div class="form-group">
+                    <label>Site Name *</label>
+                    <input type="text" id="planning-name" placeholder="e.g., Artemis Base Camp" />
+                </div>
+                <div class="form-group">
+                    <label>Actor / Operator *</label>
+                    <input type="text" id="planning-actor" placeholder="e.g., NASA, SpaceX, ESA" />
+                </div>
+                <div class="form-group">
+                    <label>State Party (Art. VI Responsibility)</label>
+                    <input type="text" id="planning-state" placeholder="e.g., USA, China, Russia, or leave blank" />
+                    <div class="hint">Required for OST Art. VI authorization and supervision.</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Latitude (°)</label>
+                        <input type="number" id="planning-lat" step="0.001" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label>Longitude (°)</label>
+                        <input type="number" id="planning-lon" step="0.001" disabled />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Radius (km) *</label>
+                        <input type="number" id="planning-radius" step="0.1" min="0.1" value="5" />
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="color" id="planning-color" value="#00ff88" style="height:42px;padding:2px;cursor:pointer;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Constraint Tier *</label>
+                    <select id="planning-tier">
+                        <option value="3">Tier 3 - General Activity (e.g., temporary camp, research)</option>
+                        <option value="2" selected>Tier 2 - Significant Interest (e.g., base, extraction)</option>
+                        <option value="1">Tier 1 - Critical Constraint (e.g., exclusion zone, heritage)</option>
+                    </select>
+                    <div class="hint">Tier determines priority in conflict detection and OST obligations.</div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="planning-description" placeholder="Brief description of planned activity..."></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Notes (optional)</label>
+                    <textarea id="planning-notes" placeholder="Additional notes, mission details, etc."></textarea>
+                </div>
+            </div>
+            <div class="planning-footer">
+                <button class="btn btn-secondary" id="planning-cancel-btn">Cancel</button>
+                <button class="btn btn-primary" id="planning-submit-btn">Check Conflicts & Place</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conflict Report Modal -->
+    <div id="conflict-modal-overlay">
+        <div id="conflict-modal">
+            <div class="conflict-header">
+                <span class="title">⚠️ Conflict Assessment Report</span>
+                <button class="close-btn" id="conflict-close-btn" title="Close">X</button>
+            </div>
+            <div class="conflict-body" id="conflict-body-content">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="conflict-footer">
+                <button class="btn btn-secondary" id="conflict-cancel-btn">Cancel</button>
+                <button class="btn btn-primary" id="conflict-confirm-btn">✓ Confirm & Place Site</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
     <div id="help-btn" title="Help / Documentation">?</div>
+    <div id="planning-btn" title="Plan a site at your current camera location">📐 Plan</div>
+    <div id="gear" title="Settings">Settings</div>
+
+    <!-- Help Modal -->
     <div id="help-modal-overlay">
         <div id="help-modal">
             <div class="help-header">
                 <span class="title">Lunar Constraint Map Guide</span>
-                <button class="close-btn" id="help-close-btn" title="Close help">X</button>
+                <button class="close-btn" id="help-close-btn" title="Close">X</button>
             </div>
             <div class="help-tabs">
                 <button class="help-tab-btn active" data-tab="about">About LCM & OST</button>
                 <button class="help-tab-btn" data-tab="settings">Settings</button>
                 <button class="help-tab-btn" data-tab="layers">Layers</button>
-                <button class="help-tab-btn" data-tab="state-mode">Art. VI State Mode & Legend</button>
-                <button class="help-tab-btn" data-tab="info">Debug & Info Panels</button>
+                <button class="help-tab-btn" data-tab="planning">Planning</button>
+                <button class="help-tab-btn" data-tab="info">Info Panels</button>
             </div>
             <div class="help-content">
-                <!-- Tab 1: Navigation & About LCM -->
                 <div class="help-tab-pane active" id="tab-about">
                     <h3>3D Globe Navigation</h3>
-                    <p>Interact with the 3D lunar globe using mouse, trackpad, or touchscreen controls:</p>
                     <ul>
-                        <li><strong>Mouse Controls:</strong>
-                            <ul>
-                                <li><strong>Rotate / Orbit:</strong> Click and drag with the primary (left) mouse button to rotate around the Moon.</li>
-                                <li><strong>Zoom:</strong> Scroll the mouse wheel up to zoom in, and down to zoom out.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Touchscreen & Trackpad Controls:</strong>
-                            <ul>
-                                <li><strong>Rotate / Orbit:</strong> Touch and drag with one finger, or click-and-drag on a trackpad to orbit the lunar globe.</li>
-                                <li><strong>Pinch to Zoom:</strong> Pinch two fingers together or spread them apart on touchscreen devices or touchpads to adjust zoom level.</li>
-                            </ul>
-                        </li>
+                        <li><strong>Rotate:</strong> Click & drag with left mouse button</li>
+                        <li><strong>Zoom:</strong> Scroll wheel</li>
+                        <li><strong>Touch:</strong> Drag to rotate, pinch to zoom</li>
                     </ul>
-
                     <h4>What is the Lunar Constraint Map (LCM)?</h4>
-                    <p>The <strong>Lunar Constraint Map</strong> is an interactive 3D geospatial tool designed to visualize spatial constraints, physical landforms, exploration heritage sites, resource zones, and regulatory status across the Moon's surface.</p>
-                    
-                    <h4>Outer Space Treaty (OST) Legal Framework</h4>
-                    <p>LCM incorporates key governance principles established under international space law:</p>
-                    
-                    <div class="article-box">
-                        <strong>Article 6 (Art. 6) – State Responsibility:</strong>
-                        <p>States Parties bear international responsibility for national activities in outer space, whether carried out by governmental agencies or non-governmental entities (private sector). Private missions require authorization and continuing supervision by the appropriate State.</p>
-                    </div>
-
-                    <div class="article-box">
-                        <strong>Article 9 (Art. 9) – Due Regard & Harmful Interference:</strong>
-                        <p>Activities in outer space must be conducted with due regard to the corresponding interests of all other States. If a state or entity has reason to believe an activity would cause potentially harmful interference with lunar activities of others, international consultation is required prior to proceeding.</p>
-                    </div>
-
-                    <div class="article-box">
-                        <strong>Article 11 (Art. 11) – Information Sharing:</strong>
-                        <p>States agree to inform the UN Secretary-General, the public, and the international scientific community to the greatest extent feasible of the nature, conduct, locations, and results of lunar activities.</p>
-                    </div>
+                    <p>Interactive 3D tool for visualizing spatial constraints, heritage sites, resource zones, and regulatory status across the Moon's surface.</p>
+                    <h4>Outer Space Treaty (OST) Framework</h4>
+                    <div class="article-box"><strong>Article 6:</strong> States bear international responsibility for national activities in space.</div>
+                    <div class="article-box"><strong>Article 9:</strong> Due regard for other states' interests; consultation required for harmful interference.</div>
+                    <div class="article-box"><strong>Article 11:</strong> Information sharing with UN Secretary-General and scientific community.</div>
                 </div>
-
-                <!-- Tab 2: Settings -->
                 <div class="help-tab-pane" id="tab-settings">
-                    <h3>Settings Control Panel</h3>
-                    <p>Click the <strong>Settings</strong> button at the top-right corner to open configuration controls:</p>
+                    <h3>Settings</h3>
                     <ul>
-                        <li><strong>Load GLB:</strong> Load a custom 3D mesh model (`.glb` or `.gltf` file) for the lunar sphere. You can also drag and drop model files anywhere onto the canvas.</li>
-                        <li><strong>Reset View:</strong> Resets camera position and target orientation to default coordinates.</li>
-                        <li><strong>Art. VI State Mode:</strong> Switches feature disc/line rendering to OST Article VI State Responsibility colors and toggles the bottom-right State Parties Legend panel.</li>
-                        <li><strong>Info Debug Panel:</strong> Shows or hides the real-time telemetry/camera debug panel at the bottom-right corner of the view.</li>
-                        <li><strong>Lock N/S Pole:</strong> Restricts camera orbit control to the equatorial plane (locking vertical North/South polar tilt).</li>
-                        <li><strong>Auto-rotate:</strong> Toggles continuous slow rotation of the lunar globe.</li>
-                        <li><strong>Glow Opacity:</strong> Adjusts the transparency slider (0.00 to 1.00) for active 3D surface feature discs and highlight overlays.</li>
+                        <li><strong>Load GLB:</strong> Load custom 3D lunar mesh</li>
+                        <li><strong>Reset View:</strong> Reset camera position</li>
+                        <li><strong>Art. VI State Mode:</strong> Color features by responsible State Party</li>
+                        <li><strong>Info Debug Panel:</strong> Show/hide telemetry HUD</li>
+                        <li><strong>Lock N/S Pole:</strong> Restrict camera to equatorial plane</li>
+                        <li><strong>Auto-rotate:</strong> Continuous globe rotation</li>
+                        <li><strong>Glow Opacity:</strong> Adjust feature disc transparency</li>
+                        <li><strong>Crosshair:</strong> Show/hide targeting crosshair at screen center</li>
                     </ul>
                 </div>
-
-                <!-- Tab 3: Layers -->
                 <div class="help-tab-pane" id="tab-layers">
-                    <h3>Moon Layers Panel</h3>
-                    <p>The <strong>Moon Layers</strong> panel at the top-left controls active features and spatial overlays:</p>
+                    <h3>Layers Panel</h3>
                     <ul>
-                        <li><strong>Global Checkbox (top):</strong> Master toggle to enable or disable all categories and layers simultaneously.</li>
-                        <li><strong>Category Accordion:</strong> Click any category header (e.g., <em>Physical Features</em>, <em>Extractable</em>, <em>Spatial</em>) to expand or collapse its layer list.</li>
-                        <li><strong>Discs Checkbox:</strong> Toggle visibility of 3D surface discs for all features within that category without unchecking individual layers.</li>
-                        <li><strong>Layer Items & Feature Sub-lists:</strong> Click the arrow beside a layer item to expand individual point/orbit features. You can toggle specific landing sites, craters, or satellites individually.</li>
+                        <li><strong>Global Checkbox:</strong> Toggle all layers</li>
+                        <li><strong>Category Accordion:</strong> Click to expand/collapse</li>
+                        <li><strong>Discs Toggle:</strong> Show/hide 3D discs per category</li>
+                        <li><strong>Layer Items:</strong> Click arrow to expand individual features</li>
+                        <li><strong>Planning Section:</strong> Shows user-added sites with delete controls and tier badges</li>
                     </ul>
                 </div>
-
-                <!-- Tab 4: Art. VI State Mode & Legend -->
-                <div class="help-tab-pane" id="tab-state-mode">
-                    <h3>OST Article VI State Responsibility Mode</h3>
-                    <p><strong>Art. VI State Mode</strong> visualizes state party authorization and supervision responsibilities under the Outer Space Treaty:</p>
+                <div class="help-tab-pane" id="tab-planning">
+                    <h3>Planning Mode</h3>
+                    <p>Click the <strong>📐 Plan</strong> button to plan a site at your current camera location.</p>
                     <ul>
-                        <li><strong>State Party Color Palette:</strong> Toggling State Mode recolors surface landing sites, bases, and orbital tracks according to responsible State Parties (USA, USSR Historical, Russian Federation, China, India, Japan, South Korea, ESA Member States, Israel, Pakistan).</li>
-                        <li><strong>State Parties Legend Panel:</strong> Appears in the bottom-right corner when State Mode is ON, listing active State Parties and international intergovernmental mechanisms (e.g., ESA joint responsibility under Art. VI & XIII).</li>
-                        <li><strong>Dual Indicator Dots:</strong> Feature sub-lists in the Moon Layers sidebar display both resource category dots and state responsibility dots.</li>
-                        <li><strong>Non-Appropriation Principle (Art. II):</strong> Natural physical landforms (craters, maria, mountain ranges) retain `state: null` designations to reflect OST Article II non-appropriation.</li>
+                        <li><strong>Move the camera</strong> to your desired landing location using orbit and zoom controls.</li>
+                        <li><strong>Click "Plan"</strong> to open the planning form with the current coordinates pre-filled.</li>
+                        <li><strong>Fill in the details:</strong> Name, Actor, State Party, Radius, Color, Tier, Description.</li>
+                        <li><strong>State Party is a free-text field</strong> - type any country or entity responsible under Art. VI.</li>
+                        <li><strong>Tier selection</strong> determines priority (Tier 1 = highest, Tier 3 = lowest).</li>
+                        <li><strong>Click "Check Conflicts & Place"</strong> to generate a conflict report.</li>
+                        <li><strong>Review the OST analysis</strong> showing Articles 6, 9, and 11 implications.</li>
+                        <li><strong>Confirm</strong> to place the site at your camera's location.</li>
+                        <li><strong>Manage sites</strong> from the Planning section in the Layers panel.</li>
+                        <li><strong>Data persistence:</strong> Your planned sites are saved in local storage.</li>
                     </ul>
+                    <div class="article-box">
+                        <strong>💡 Tier System:</strong>
+                        <p><strong>Tier 1</strong> - Critical constraints requiring mandatory Art. IX consultation.<br>
+                        <strong>Tier 2</strong> - Significant interests requiring due regard and coordination.<br>
+                        <strong>Tier 3</strong> - General activities with standard Art. XI notification.</p>
+                    </div>
                 </div>
-
-                <!-- Tab 5: Info & Debug Panels -->
                 <div class="help-tab-pane" id="tab-info">
-                    <h3>On-Screen Information & Debug Panels</h3>
-                    <h4>Bottom-Right Info Debug Panel</h4>
-                    <p>Disabled by default, but can be enabled via the <strong>Info Debug Panel</strong> toggle in Settings:</p>
+                    <h3>Information Panels</h3>
+                    <h4>Bottom-Left Telemetry</h4>
                     <ul>
-                        <li><strong>Dist:</strong> Camera distance multiplier relative to the center of the Moon.</li>
-                        <li><strong>Lat / Lon:</strong> Latitude (deg N/S) and Longitude (deg E/W) of current camera viewpoint.</li>
-                        <li><strong>Sens:</strong> Dynamic orbital rotation sensitivity based on zoom level.</li>
-                        <li><strong>Rot:</strong> Auto-rotation state (`ON` / `OFF`).</li>
-                        <li><strong>Collapse Button `[-] / [+]`:</strong> Minimizes the debug panel to a compact header bar.</li>
+                        <li><strong>LAT/LON:</strong> Coordinates at screen center</li>
+                        <li><strong>Status:</strong> Shows overlapping features at center point</li>
                     </ul>
-
-                    <h4>Bottom-Left Panel (Centre Overlap Status)</h4>
+                    <h4>Bottom-Right Info (Debug)</h4>
                     <ul>
-                        <li><strong>Loc:</strong> Coordinates on the lunar surface directly at the center of your screen view.</li>
-                        <li><strong>Status:</strong> Shows active zone constraints, applicable OST Articles (Art. 6 / Art. 9 / Art. 2), tier levels, state responsibility tags, and feature names located at the center crosshairs, or displays <em>"Open"</em> if no active constraints overlap.</li>
+                        <li><strong>Dist:</strong> Camera distance from Moon center</li>
+                        <li><strong>Lat/Lon:</strong> Camera viewpoint coordinates</li>
+                        <li><strong>Sens:</strong> Dynamic rotation sensitivity</li>
+                        <li><strong>Rot:</strong> Auto-rotation state</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Settings gear -->
-    <div id="gear" title="Settings">Settings</div>
+    <!-- Settings Panel -->
     <div id="settings-panel">
         <div class="settings-header-title">Lunar Constraint Map</div>
         <div class="settings-item">
-            <span class="label"> Load GLB</span>
+            <span class="label">Load GLB</span>
             <button class="action-btn" id="load-btn">Choose file...</button>
             <input type="file" id="file-input" accept=".glb,.gltf" style="display:none;" />
         </div>
         <div class="settings-item">
-            <span class="label"> Reset View</span>
+            <span class="label">Reset View</span>
             <button class="action-btn" id="reset-view-btn">Reset</button>
         </div>
         <div class="settings-item highlight-item">
-            <span class="label" style="font-weight: bold; color: #77ccff;" title="Switch assets from resource colors to OST Article VI State Responsibility colors">Art. VI State Mode</span>
+            <span class="label" style="font-weight:bold;color:#77ccff;">Art. VI State Mode</span>
             <div class="toggle">
-                <span class="toggle-label" id="state-mode-label" style="color: #77ccff;">OFF</span>
+                <span class="toggle-label" id="state-mode-label" style="color:#77ccff;">OFF</span>
                 <div class="toggle-switch" id="state-mode-toggle"><div class="slider"></div></div>
             </div>
         </div>
         <div class="settings-item">
-            <span class="label" title="Show or hide camera telemetry and rotation debug panel">Info Debug Panel</span>
+            <span class="label">Info Debug Panel</span>
             <div class="toggle">
                 <span class="toggle-label" id="info-debug-label">OFF</span>
                 <div class="toggle-switch" id="info-debug-toggle"><div class="slider"></div></div>
             </div>
         </div>
         <div class="settings-item">
-            <span class="label"> Lock N/S Pole</span>
+            <span class="label">Lock N/S Pole</span>
             <div class="toggle">
                 <span class="toggle-label" id="lock-label">OFF</span>
                 <div class="toggle-switch" id="lock-toggle"><div class="slider"></div></div>
             </div>
         </div>
         <div class="settings-item">
-            <span class="label"> Auto-rotate</span>
+            <span class="label">Auto-rotate</span>
             <div class="toggle">
                 <span class="toggle-label" id="rot-label">OFF</span>
                 <div class="toggle-switch" id="rot-toggle"><div class="slider"></div></div>
             </div>
         </div>
-        <div class="settings-item" style="flex-wrap: wrap;">
-            <span class="label"> Glow Opacity</span>
+        <div class="settings-item">
+            <span class="label">Crosshair</span>
+            <div class="toggle">
+                <span class="toggle-label" id="crosshair-label">OFF</span>
+                <div class="toggle-switch" id="crosshair-toggle"><div class="slider"></div></div>
+            </div>
+        </div>
+        <div class="settings-item" style="flex-wrap:wrap;">
+            <span class="label">Glow Opacity</span>
             <div class="slider-container">
                 <input type="range" id="opacity-slider" min="0" max="1" step="0.01" value="0.5" />
                 <span class="slider-value" id="opacity-value">0.50</span>
@@ -815,6 +1132,7 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { FEATURES, LAYER_DEFS, CATEGORIES, TIER_DEFS, STATE_DEFS } from './moonLayers.js';
 
+        // --- DOM References ---
         const msgEl = document.getElementById('message');
         const fileInput = document.getElementById('file-input');
         const loadBtn = document.getElementById('load-btn');
@@ -831,9 +1149,40 @@
         const stateLegendList = document.getElementById('state-legend-list');
         const infoDebugToggle = document.getElementById('info-debug-toggle');
         const infoDebugLabel = document.getElementById('info-debug-label');
+        const crosshairToggle = document.getElementById('crosshair-toggle');
+        const crosshairLabel = document.getElementById('crosshair-label');
+        const crosshairEl = document.getElementById('crosshair');
+        const planningBtn = document.getElementById('planning-btn');
+        const planningModalOverlay = document.getElementById('planning-modal-overlay');
+        const planningCloseBtn = document.getElementById('planning-close-btn');
+        const planningCancelBtn = document.getElementById('planning-cancel-btn');
+        const planningSubmitBtn = document.getElementById('planning-submit-btn');
+        const planningName = document.getElementById('planning-name');
+        const planningActor = document.getElementById('planning-actor');
+        const planningState = document.getElementById('planning-state');
+        const planningLat = document.getElementById('planning-lat');
+        const planningLon = document.getElementById('planning-lon');
+        const planningRadius = document.getElementById('planning-radius');
+        const planningColor = document.getElementById('planning-color');
+        const planningTier = document.getElementById('planning-tier');
+        const planningDescription = document.getElementById('planning-description');
+        const planningNotes = document.getElementById('planning-notes');
+        const currentLocationDisplay = document.getElementById('current-location-display');
+        const conflictModalOverlay = document.getElementById('conflict-modal-overlay');
+        const conflictBodyContent = document.getElementById('conflict-body-content');
+        const conflictCloseBtn = document.getElementById('conflict-close-btn');
+        const conflictCancelBtn = document.getElementById('conflict-cancel-btn');
+        const conflictConfirmBtn = document.getElementById('conflict-confirm-btn');
+        const userSitesContainer = document.getElementById('user-sites-container');
+        const clearUserSitesBtn = document.getElementById('clear-user-sites');
 
         let isStateModeActive = false;
         let isInfoDebugActive = false;
+        let isCrosshairVisible = false;
+        let pendingSiteData = null;
+        let currentCameraLat = 0;
+        let currentCameraLon = 0;
+
         const distSpan = document.getElementById('dist');
         const latSpan = document.getElementById('lat-display');
         const lonSpan = document.getElementById('lon-display');
@@ -853,6 +1202,37 @@
         const centreOverlapText = document.getElementById('centre-overlap-text');
         const hudStatusDotEl = document.getElementById('hud-status-dot');
 
+        // --- User Sites Storage ---
+        let userSites = [];
+        const USER_SITES_KEY = 'lcm_user_sites';
+
+        function loadUserSites() {
+            try {
+                const data = localStorage.getItem(USER_SITES_KEY);
+                if (data) {
+                    userSites = JSON.parse(data);
+                    userSites = userSites.filter(s => s.id && s.name && s.lat !== undefined && s.lon !== undefined);
+                }
+            } catch (e) {
+                userSites = [];
+            }
+        }
+
+        function saveUserSites() {
+            try {
+                localStorage.setItem(USER_SITES_KEY, JSON.stringify(userSites));
+            } catch (e) {
+                console.warn('Could not save user sites to localStorage');
+            }
+            renderUserSites();
+            updateUserSiteVisibility();
+        }
+
+        function generateId() {
+            return 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+        }
+
+        // --- Three.js Setup ---
         let isInfoCollapsed = false;
         infoToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -887,6 +1267,7 @@
 
         scene.add(new THREE.AmbientLight(0xffffff, 1.0));
 
+        // Stars
         (function addStars() {
             const geo = new THREE.BufferGeometry();
             const count = 2500;
@@ -904,6 +1285,7 @@
             scene.add(new THREE.Points(geo, mat));
         })();
 
+        // Moon
         let currentMoon = null;
         let moonMeshes = [];
         function createFallbackMoon() {
@@ -918,6 +1300,7 @@
         currentMoon = fallbackMoon;
         moonMeshes = [fallbackMoon];
 
+        // --- Helper Functions ---
         function showMessage(text, type = 'info') {
             msgEl.textContent = text;
             msgEl.className = type;
@@ -979,9 +1362,471 @@
         const MOON_RADIUS_KM = 1737.4;
         const MOON_3D_RADIUS = 1;
         const DEFAULT_RADIUS_KM = 10;
-        const MIN_VISUAL_RADIUS_KM = 100;
-        const MIN_DETECTION_KM = 200;
+        const MIN_VISUAL_RADIUS_KM = 50;
+        const MIN_DETECTION_KM = 150;
 
+        // --- Planning System ---
+        function openPlanningModal() {
+            const lat = currentCameraLat;
+            const lon = currentCameraLon;
+            planningLat.value = lat.toFixed(4);
+            planningLon.value = lon.toFixed(4);
+            
+            const latStr = lat >= 0 ? `${lat.toFixed(4)}° N` : `${(-lat).toFixed(4)}° S`;
+            const lonStr = lonToDisplay(lon);
+            currentLocationDisplay.textContent = `📍 ${latStr}, ${lonStr}`;
+
+            planningName.value = '';
+            planningActor.value = '';
+            planningState.value = '';
+            planningRadius.value = '5';
+            planningColor.value = '#00ff88';
+            planningTier.value = '2';
+            planningDescription.value = '';
+            planningNotes.value = '';
+
+            planningModalOverlay.classList.add('visible');
+        }
+
+        function closePlanningModal() {
+            planningModalOverlay.classList.remove('visible');
+        }
+
+        function checkConflicts(newSite) {
+            const overlaps = [];
+
+            for (const feature of FEATURES) {
+                if (!feature.tags) continue;
+                const featureRadius = feature.radius_km || DEFAULT_RADIUS_KM;
+                const dist = distanceBetween(newSite.lat, newSite.lon, feature.lat, feature.lon);
+                const combinedRadius = newSite.radius_km + featureRadius;
+                if (dist < combinedRadius) {
+                    overlaps.push({
+                        type: 'feature',
+                        feature: feature,
+                        distance: dist,
+                        overlapAmount: combinedRadius - dist,
+                        tier: feature.tier || 3,
+                        state: feature.state || null,
+                        articles: feature.articles || [],
+                        name: feature.name,
+                        radius_km: featureRadius
+                    });
+                }
+            }
+
+            for (const site of userSites) {
+                if (site.id === newSite.id) continue;
+                const dist = distanceBetween(newSite.lat, newSite.lon, site.lat, site.lon);
+                const combinedRadius = newSite.radius_km + site.radius_km;
+                if (dist < combinedRadius) {
+                    overlaps.push({
+                        type: 'user_site',
+                        feature: site,
+                        distance: dist,
+                        overlapAmount: combinedRadius - dist,
+                        tier: site.tier || 2,
+                        state: site.state || null,
+                        articles: [],
+                        name: site.name + ' (Planned)',
+                        radius_km: site.radius_km
+                    });
+                }
+            }
+
+            return overlaps;
+        }
+
+        function generateOSTAnalysis(overlaps, newSite) {
+            const analysis = [];
+            const highTierOverlaps = overlaps.filter(o => o.tier === 1);
+            const mediumTierOverlaps = overlaps.filter(o => o.tier === 2);
+            const states = new Set(overlaps.map(o => o.state).filter(s => s));
+
+            // Art. IX - Harmful Interference / Due Regard
+            if (highTierOverlaps.length > 0) {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'HIGH',
+                    message: `⚠️ Site overlaps with ${highTierOverlaps.length} Tier 1 zone(s). Mandatory consultation with affected States required before proceeding.`,
+                    details: highTierOverlaps.map(o => `• ${o.name} (${o.distance.toFixed(1)} km overlap)`).join('\n')
+                });
+            } else if (mediumTierOverlaps.length > 0) {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'MEDIUM',
+                    message: `Site overlaps with ${mediumTierOverlaps.length} Tier 2 zone(s). Due regard and coordination recommended.`,
+                    details: mediumTierOverlaps.map(o => `• ${o.name} (${o.distance.toFixed(1)} km overlap)`).join('\n')
+                });
+            } else if (overlaps.length > 0) {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'LOW',
+                    message: `Site overlaps with ${overlaps.length} feature(s). General due regard applies.`,
+                    details: overlaps.map(o => `• ${o.name} (${o.distance.toFixed(1)} km overlap)`).join('\n')
+                });
+            } else {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'CLEAR',
+                    message: '✅ No overlaps detected. No Art. IX consultation required.'
+                });
+            }
+
+            // Art. VI - State Responsibility
+            if (newSite.state && newSite.state.trim()) {
+                analysis.push({
+                    article: 'Art. VI',
+                    severity: 'INFO',
+                    message: `Site falls under ${newSite.state} responsibility. Ensure authorization and continuing supervision as per Art. VI.`
+                });
+            } else {
+                analysis.push({
+                    article: 'Art. VI',
+                    severity: 'WARNING',
+                    message: '⚠️ No State Party entered. Art. VI requires a State to authorize and supervise national activities. Please specify a State Party.'
+                });
+            }
+
+            // Multiple States overlap
+            if (states.size > 1) {
+                const stateNames = Array.from(states).map(s => s || 'Unknown');
+                analysis.push({
+                    article: 'Art. IX / Art. VI',
+                    severity: 'MEDIUM',
+                    message: `Site overlaps with features from multiple States (${stateNames.join(', ')}). International consultation may be required.`
+                });
+            }
+
+            // Tier-based recommendation
+            if (newSite.tier === 1) {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'INFO',
+                    message: `🔴 Tier 1 site: Ensure all Art. IX consultation requirements are met before proceeding.`
+                });
+            } else if (newSite.tier === 2) {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'INFO',
+                    message: `🟡 Tier 2 site: Coordinate with affected parties and exercise due regard.`
+                });
+            } else {
+                analysis.push({
+                    article: 'Art. IX',
+                    severity: 'INFO',
+                    message: `🟢 Tier 3 site: Standard notification and due regard apply.`
+                });
+            }
+
+            // Art. XI - Information Sharing
+            if (overlaps.length === 0) {
+                analysis.push({
+                    article: 'Art. XI',
+                    severity: 'INFO',
+                    message: '✅ No conflicts detected. Proceed with Art. XI notification to UN Secretary-General.'
+                });
+            } else {
+                analysis.push({
+                    article: 'Art. XI',
+                    severity: 'INFO',
+                    message: '📋 Report site details and any coordination activities to UN Secretary-General as per Art. XI.'
+                });
+            }
+
+            return analysis;
+        }
+
+        function showConflictReport(newSite) {
+            const overlaps = checkConflicts(newSite);
+            const analysis = generateOSTAnalysis(overlaps, newSite);
+
+            const hasHighSeverity = analysis.some(a => a.severity === 'HIGH');
+            const hasMediumSeverity = analysis.some(a => a.severity === 'MEDIUM' || a.severity === 'WARNING');
+
+            const tierLabel = newSite.tier === 1 ? 'Tier 1 - Critical' :
+                             newSite.tier === 2 ? 'Tier 2 - Significant' :
+                             'Tier 3 - General';
+
+            let html = `
+                <div class="conflict-summary">
+                    <h4>📋 Site: ${newSite.name}</h4>
+                    <div style="font-size:0.85rem;color:#99b;">
+                        <div>📍 ${newSite.lat.toFixed(4)}°, ${newSite.lon.toFixed(4)}°</div>
+                        <div>📏 Radius: ${newSite.radius_km} km</div>
+                        <div>🏛️ Actor: ${newSite.actor || 'Unspecified'}</div>
+                        ${newSite.state && newSite.state.trim() ? `<div>🏴 State: ${newSite.state}</div>` : ''}
+                        <div>🏷️ Tier: ${tierLabel}</div>
+                        <div style="margin-top:6px;font-size:0.8rem;color:#667;">${newSite.description || ''}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:0.85rem;">
+                        <span>⚠️ Overlaps: <strong style="color:${overlaps.length > 0 ? '#ffaa55' : '#55ff88'}">${overlaps.length}</strong></span>
+                        <span>🏷️ Tier 1: <strong style="color:${overlaps.filter(o => o.tier === 1).length > 0 ? '#ff5555' : '#55ff88'}">${overlaps.filter(o => o.tier === 1).length}</strong></span>
+                        <span>🏷️ Tier 2: <strong>${overlaps.filter(o => o.tier === 2).length}</strong></span>
+                        <span>🏷️ Tier 3: <strong>${overlaps.filter(o => o.tier === 3).length}</strong></span>
+                    </div>
+                </div>
+            `;
+
+            html += `<h4 style="color:#55aaff;margin-bottom:8px;">⚖️ OST Analysis</h4>`;
+            for (const item of analysis) {
+                const severityClass = item.severity === 'HIGH' ? 'severity-high' :
+                                    item.severity === 'MEDIUM' || item.severity === 'WARNING' ? 'severity-medium' :
+                                    item.severity === 'CLEAR' ? '' : 'severity-low';
+                html += `
+                    <div class="conflict-item ${severityClass}">
+                        <div class="item-title">${item.article} ${item.severity !== 'CLEAR' ? `[${item.severity}]` : '✅'}</div>
+                        <div class="item-detail">${item.message}</div>
+                        ${item.details ? `<div style="font-size:0.8rem;color:#889;margin-top:4px;white-space:pre-line;">${item.details}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            if (overlaps.length > 0) {
+                html += `<h4 style="color:#55aaff;margin:12px 0 8px 0;">📌 Overlapping Features</h4>`;
+                for (const overlap of overlaps) {
+                    const tierColor = overlap.tier === 1 ? '#ff5555' : overlap.tier === 2 ? '#ffaa55' : '#6688aa';
+                    html += `
+                        <div style="background:rgba(255,255,255,0.03);border-radius:6px;padding:8px 12px;margin-bottom:4px;border-left:3px solid ${tierColor};">
+                            <div style="font-weight:bold;color:#ddd;">${overlap.name}</div>
+                            <div style="font-size:0.8rem;color:#99b;">
+                                Distance: ${overlap.distance.toFixed(1)} km | 
+                                Overlap: ${overlap.overlapAmount.toFixed(1)} km | 
+                                Tier: ${overlap.tier}
+                                ${overlap.state ? ` | State: ${overlap.state}` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            conflictBodyContent.innerHTML = html;
+
+            pendingSiteData = newSite;
+
+            if (hasHighSeverity) {
+                conflictConfirmBtn.textContent = '⚠️ Proceed with Caution';
+                conflictConfirmBtn.style.background = '#ff5555';
+                conflictConfirmBtn.style.color = '#fff';
+            } else if (hasMediumSeverity) {
+                conflictConfirmBtn.textContent = '⚠️ Confirm & Place';
+                conflictConfirmBtn.style.background = '#ffaa55';
+                conflictConfirmBtn.style.color = '#000';
+            } else {
+                conflictConfirmBtn.textContent = '✅ Confirm & Place Site';
+                conflictConfirmBtn.style.background = '#55ff88';
+                conflictConfirmBtn.style.color = '#000';
+            }
+
+            conflictModalOverlay.classList.add('visible');
+        }
+
+        function closeConflictModal() {
+            conflictModalOverlay.classList.remove('visible');
+            pendingSiteData = null;
+        }
+
+        function confirmPlaceSite() {
+            if (!pendingSiteData) return;
+            const site = pendingSiteData;
+            site.id = generateId();
+            site.createdAt = new Date().toISOString();
+            site.active = true;
+
+            userSites.push(site);
+            saveUserSites();
+            renderUserSites();
+            updateUserSiteVisibility();
+
+            showMessage(`✅ Site "${site.name}" placed successfully!`, 'success');
+            setTimeout(() => showMessage('', 'hidden'), 3000);
+
+            closeConflictModal();
+            closePlanningModal();
+            pendingSiteData = null;
+        }
+
+        function deleteUserSite(id) {
+            userSites = userSites.filter(s => s.id !== id);
+            saveUserSites();
+            renderUserSites();
+            updateUserSiteVisibility();
+            showMessage('🗑️ Site deleted', 'info');
+            setTimeout(() => showMessage('', 'hidden'), 1500);
+        }
+
+        function clearAllUserSites() {
+            if (userSites.length === 0) return;
+            if (confirm('Delete all planned sites?')) {
+                userSites = [];
+                saveUserSites();
+                renderUserSites();
+                updateUserSiteVisibility();
+                showMessage('🗑️ All planned sites cleared', 'info');
+                setTimeout(() => showMessage('', 'hidden'), 1500);
+            }
+        }
+
+        // --- User Site 3D Objects - Curved disc with no meridian line ---
+        const userSiteObjects = new Map();
+
+        function createUserSiteDisc(site) {
+            const color = site.color || '#00ff88';
+            const radiusKm = site.radius_km || 5;
+            const pos = latLonToPosition(site.lat, site.lon, MOON_3D_RADIUS);
+            const targetNormal = pos.clone().normalize();
+
+            // Create a curved disc that follows the surface - using SphereGeometry with a thin slice
+            const theta = radiusKm / MOON_RADIUS_KM;
+            const segments = Math.max(16, Math.min(48, Math.floor(theta * 50)));
+            
+            const discGeo = new THREE.SphereGeometry(
+                1.001,
+                segments,
+                Math.max(8, Math.min(20, Math.floor(segments / 2))),
+                0,
+                Math.PI * 2,
+                0,
+                theta
+            );
+            
+            const discMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(color),
+                transparent: true,
+                opacity: 0.35,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                depthTest: true,
+                flatShading: true
+            });
+            const disc = new THREE.Mesh(discGeo, discMat);
+            disc.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+
+            // Border ring - dashed, thin, subtle
+            const ringPoints = [];
+            const ringSegments = 48;
+            const ringRadius = radiusKm / MOON_RADIUS_KM;
+            for (let i = 0; i <= ringSegments; i++) {
+                const thetaAngle = (i / ringSegments) * Math.PI * 2;
+                const x = ringRadius * Math.sin(thetaAngle);
+                const y = ringRadius * Math.cos(thetaAngle);
+                const p = new THREE.Vector3(0, y, x);
+                p.applyQuaternion(disc.quaternion);
+                p.add(pos);
+                ringPoints.push(p);
+            }
+            const ringGeo = new THREE.BufferGeometry().setFromPoints(ringPoints);
+            const ringMat = new THREE.LineDashedMaterial({
+                color: new THREE.Color(color),
+                transparent: true,
+                opacity: 0.35,
+                dashSize: 0.015,
+                gapSize: 0.01,
+                depthWrite: false
+            });
+            const ring = new THREE.Line(ringGeo, ringMat);
+            ring.computeLineDistances();
+
+            // Label
+            const labelTex = createLabelTexture(site.name + (site.tier ? ` [T${site.tier}]` : ''), 24);
+            const labelMat = new THREE.SpriteMaterial({
+                map: labelTex,
+                transparent: true,
+                depthTest: false,
+                depthWrite: false,
+                opacity: 1.0,
+                sizeAttenuation: true
+            });
+            const label = new THREE.Sprite(labelMat);
+            const labelHeight = 1.005 + (Math.max(radiusKm, MIN_VISUAL_RADIUS_KM) / MOON_RADIUS_KM) * 0.15;
+            const labelPos = targetNormal.clone().multiplyScalar(labelHeight);
+            label.position.copy(labelPos);
+            label.scale.set(0.35, 0.08, 1);
+
+            const group = new THREE.Group();
+            group.add(disc);
+            group.add(ring);
+            group.add(label);
+
+            return { group, disc, ring, label };
+        }
+
+        function createLabelTexture(text, fontSize = 32) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 96;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, canvas.width/2, canvas.height/2);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, canvas.width/2, canvas.height/2);
+            ctx.font = `${fontSize * 0.4}px Arial, sans-serif`;
+            ctx.fillStyle = 'rgba(85,255,136,0.6)';
+            ctx.fillText('(PLANNED)', canvas.width/2, canvas.height - 14);
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function updateUserSiteVisibility() {
+            for (const [id, obj] of userSiteObjects) {
+                if (currentMoon) {
+                    currentMoon.remove(obj.group);
+                }
+            }
+            userSiteObjects.clear();
+
+            for (const site of userSites) {
+                if (site.active === false) continue;
+                const obj = createUserSiteDisc(site);
+                if (currentMoon) {
+                    currentMoon.add(obj.group);
+                }
+                userSiteObjects.set(site.id, obj);
+            }
+        }
+
+        // --- Render User Sites in Layers Panel ---
+        function renderUserSites() {
+            if (userSites.length === 0) {
+                userSitesContainer.innerHTML = '<div style="font-size:0.8rem;color:#667;padding:4px 0;">No planned sites</div>';
+                return;
+            }
+
+            let html = '';
+            for (const site of userSites) {
+                const color = site.color || '#00ff88';
+                const tierLabel = site.tier || 2;
+                html += `
+                    <div class="user-site-item" data-id="${site.id}">
+                        <span class="color-dot" style="background-color:${color};"></span>
+                        <span style="flex:1;font-size:0.8rem;">${site.name}</span>
+                        <span class="tier-badge">T${tierLabel}</span>
+                        <span style="font-size:0.7rem;color:#667;">${site.radius_km}km</span>
+                        <button class="delete-btn" data-id="${site.id}" title="Delete site">✕</button>
+                    </div>
+                `;
+            }
+            userSitesContainer.innerHTML = html;
+
+            userSitesContainer.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteUserSite(btn.dataset.id);
+                });
+            });
+        }
+
+        // --- Layer System ---
         const layerPriority = [];
         for (const catName of Object.keys(CATEGORIES)) {
             const keys = CATEGORIES[catName];
@@ -992,21 +1837,10 @@
             }
         }
 
-        const TAG_REASON_MAP = {
-            heritage: 'Heritage site',
-            political: 'Political/symbolic site',
-            water_ice: 'Water ice / PSR',
-            science_interest: 'Scientific interest',
-            radio_quiet: 'Radio quiet zone',
-            sensitive: 'Sensitive environment',
-            data_value: 'Data value',
-            crewed: 'Crewed landing'
-        };
-
         const activeLayers = new Set();
         const categoryDiscState = new Map();
         const featureActiveState = new Map();
-        const featureEnabledState = new Map(); // feature.id -> true/false
+        const featureEnabledState = new Map();
 
         function getActiveTags() {
             const activeTags = new Set();
@@ -1017,10 +1851,56 @@
             return activeTags;
         }
 
+        // --- FIXED: getFeatureStatus now checks user sites even when no layers are active ---
         function getFeatureStatus(lat, lon) {
-            if (activeLayers.size === 0) return null;
-            const activeTags = getActiveTags();
             const overlappingFeatures = [];
+
+            // ALWAYS check user sites first - they should show regardless of layer state
+            for (const site of userSites) {
+                if (!site.active) continue;
+                const distKm = distanceBetween(lat, lon, site.lat, site.lon);
+                if (distKm < site.radius_km) {
+                    overlappingFeatures.push({
+                        feature: {
+                            id: site.id,
+                            name: site.name + ' (Planned)',
+                            tier: site.tier || 2,
+                            state: site.state || null,
+                            articles: [],
+                            source: 'User-planned site',
+                            note: site.description || 'No description'
+                        },
+                        distKm: distKm,
+                        isUserSite: true
+                    });
+                }
+            }
+
+            // If no layers active, return user sites only (or null if none)
+            if (activeLayers.size === 0) {
+                if (overlappingFeatures.length === 0) return null;
+                overlappingFeatures.sort((a, b) => a.distKm - b.distKm);
+                const { feature, distKm, isUserSite } = overlappingFeatures[0];
+                let html = `<div class="hud-feature-title">${feature.name}${isUserSite ? ' 📋' : ''}</div>`;
+                html += `<div class="hud-detail-line"><strong>Category:</strong> Planning</div>`;
+                const tierObj = TIER_DEFS[feature.tier] || TIER_DEFS[3];
+                html += `<div class="hud-detail-line"><strong>Tier:</strong> Tier ${feature.tier || 3} (${tierObj.label})</div>`;
+                if (feature.state && feature.state.trim()) {
+                    html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${feature.state}</div>`;
+                } else {
+                    html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> Not specified</div>`;
+                }
+                html += `<div class="hud-detail-line"><strong>Source:</strong> User-planned</div>`;
+                html += `<div class="hud-detail-line"><strong>Notes:</strong> ${feature.note || 'No description'}</div>`;
+                return {
+                    html,
+                    tier: feature.tier || 3,
+                    articles: feature.articles || []
+                };
+            }
+
+            // Layers are active - check features
+            const activeTags = getActiveTags();
 
             for (const feature of FEATURES) {
                 if (!feature.tags || !feature.tags.some(t => activeTags.has(t))) continue;
@@ -1056,20 +1936,17 @@
                     if (distKm < detectionRadius) overlaps = true;
                 }
                 if (overlaps) {
-                    overlappingFeatures.push({ feature, distKm });
+                    overlappingFeatures.push({ feature, distKm, isUserSite: false });
                 }
             }
 
             if (overlappingFeatures.length === 0) return null;
 
-            // Pick the single closest feature to the current location
             overlappingFeatures.sort((a, b) => a.distKm - b.distKm);
-            const { feature, distKm } = overlappingFeatures[0];
+            const { feature, distKm, isUserSite } = overlappingFeatures[0];
 
-            // 1. Name
-            let html = `<div class="hud-feature-title">${feature.name}</div>`;
-
-            // 2. Category layer
+            let html = `<div class="hud-feature-title">${feature.name}${isUserSite ? ' 📋' : ''}</div>`;
+            
             let primaryLayerKey = null;
             for (const key of layerPriority) {
                 if (activeLayers.has(key)) {
@@ -1080,31 +1957,22 @@
                     }
                 }
             }
-            const categoryLabel = primaryLayerKey && LAYER_DEFS[primaryLayerKey] ? LAYER_DEFS[primaryLayerKey].label : 'General';
+            const categoryLabel = primaryLayerKey && LAYER_DEFS[primaryLayerKey] ? LAYER_DEFS[primaryLayerKey].label : (isUserSite ? 'Planning' : 'General');
             html += `<div class="hud-detail-line"><strong>Category:</strong> ${categoryLabel}</div>`;
 
-            // 3. Tier label from TIER_DEFS
             const tierObj = TIER_DEFS[feature.tier] || TIER_DEFS[3];
             html += `<div class="hud-detail-line"><strong>Tier:</strong> Tier ${feature.tier || 3} (${tierObj.label})</div>`;
 
-            // 4. Article VI responsibility
-            if (feature.state && STATE_DEFS[feature.state]) {
-                const st = STATE_DEFS[feature.state];
-                let stName = st.name;
-                if (feature.joint_states && feature.joint_states.length > 1) {
-                    stName += ` (Joint: ${feature.joint_states.join(', ')})`;
-                }
-                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${st.flag || ''} ${stName}</div>`;
+            if (feature.state && feature.state.trim()) {
+                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${feature.state}</div>`;
             } else {
-                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> None. Article II. Natural feature not subject to appropriation.</div>`;
+                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${isUserSite ? 'Not specified' : 'None. Article II. Natural feature not subject to appropriation.'}</div>`;
             }
 
-            // 5. Source
-            const sourceText = feature.source || 'Unverified. Pending source confirmation.';
+            const sourceText = feature.source || (isUserSite ? 'User-planned' : 'Unverified. Pending source confirmation.');
             html += `<div class="hud-detail-line"><strong>Source:</strong> ${sourceText}</div>`;
 
-            // 6. Notes (One line only)
-            const noteText = feature.note || 'No additional note.';
+            const noteText = feature.note || (isUserSite ? (feature.description || 'No description') : 'No additional note.');
             html += `<div class="hud-detail-line"><strong>Notes:</strong> ${noteText}</div>`;
 
             return {
@@ -1114,26 +1982,11 @@
             };
         }
 
-        function createLabelTexture(text, fontSize = 32) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 96;
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.9)';
-            ctx.shadowBlur = 20;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, canvas.width/2, canvas.height/2);
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, canvas.width/2, canvas.height/2);
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            return texture;
-        }
+        // --- Feature Objects ---
+        const featureObjects = {};
+        const allGlowMeshes = [];
+        const allLabels = [];
+        const satelliteList = [];
 
         function createCurvedDiscGeometry(radiusKm, sphereRadius = 1.002) {
             const theta = radiusKm / MOON_RADIUS_KM;
@@ -1155,11 +2008,6 @@
             group.add(coreMesh);
             return group;
         }
-
-        const featureObjects = {};
-        const allGlowMeshes = [];
-        const allLabels = [];
-        const satelliteList = [];
 
         function buildLayers() {
             for (const key in featureObjects) {
@@ -1294,6 +2142,8 @@
             buildLayerUI();
             updateVisibility(new Set());
             updateGlobalToggle();
+            renderUserSites();
+            updateUserSiteVisibility();
         }
 
         function buildStateLegendUI() {
@@ -1306,7 +2156,7 @@
                 colorBox.className = 'state-legend-color';
                 colorBox.style.backgroundColor = st.color;
                 const nameLabel = document.createElement('span');
-                nameLabel.textContent = `${st.flag || ''} ${st.name}`;
+                nameLabel.textContent = st.name;
                 item.appendChild(colorBox);
                 item.appendChild(nameLabel);
                 stateLegendList.appendChild(item);
@@ -1405,7 +2255,6 @@
                     layerDiv.appendChild(subCount);
                     body.appendChild(layerDiv);
 
-                    // Feature list
                     const featureList = document.createElement('div');
                     featureList.className = 'feature-list';
                     for (const feature of layerFeatures) {
@@ -1674,6 +2523,7 @@
             updateGlobalToggle();
         }
 
+        // --- Event Listeners ---
         opacitySlider.addEventListener('input', () => {
             const val = parseFloat(opacitySlider.value);
             opacityValue.textContent = val.toFixed(2);
@@ -1747,6 +2597,7 @@
                             currentMoon.add(entry.satellite.label);
                         }
                     }
+                    updateUserSiteVisibility();
                     showMessage('Moon loaded', 'success');
                     setTimeout(() => showMessage('', 'hidden'), 2500);
                 },
@@ -1774,24 +2625,17 @@
             }
         });
 
-        // Help Modal Logic
+        // --- Help Modal ---
         const helpBtn = document.getElementById('help-btn');
         const helpModalOverlay = document.getElementById('help-modal-overlay');
         const helpCloseBtn = document.getElementById('help-close-btn');
         const helpTabBtns = document.querySelectorAll('.help-tab-btn');
         const helpTabPanes = document.querySelectorAll('.help-tab-pane');
 
-        function openHelpModal() {
-            helpModalOverlay.classList.add('visible');
-        }
-        function closeHelpModal() {
-            helpModalOverlay.classList.remove('visible');
-        }
+        function openHelpModal() { helpModalOverlay.classList.add('visible'); }
+        function closeHelpModal() { helpModalOverlay.classList.remove('visible'); }
 
-        helpBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openHelpModal();
-        });
+        helpBtn.addEventListener('click', (e) => { e.stopPropagation(); openHelpModal(); });
         helpCloseBtn.addEventListener('click', closeHelpModal);
         helpModalOverlay.addEventListener('click', (e) => {
             if (e.target === helpModalOverlay) closeHelpModal();
@@ -1802,13 +2646,74 @@
                 const targetTab = btn.dataset.tab;
                 helpTabBtns.forEach(b => b.classList.remove('active'));
                 helpTabPanes.forEach(p => p.classList.remove('active'));
-
                 btn.classList.add('active');
                 const activePane = document.getElementById(`tab-${targetTab}`);
                 if (activePane) activePane.classList.add('active');
             });
         });
 
+        // --- Planning Button ---
+        planningBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openPlanningModal();
+        });
+
+        // --- Planning Modal Events ---
+        planningCloseBtn.addEventListener('click', closePlanningModal);
+        planningCancelBtn.addEventListener('click', closePlanningModal);
+        planningModalOverlay.addEventListener('click', (e) => {
+            if (e.target === planningModalOverlay) closePlanningModal();
+        });
+
+        planningSubmitBtn.addEventListener('click', () => {
+            const name = planningName.value.trim();
+            const actor = planningActor.value.trim();
+            const state = planningState.value.trim();
+            const lat = parseFloat(planningLat.value);
+            const lon = parseFloat(planningLon.value);
+            const radius = parseFloat(planningRadius.value);
+            const color = planningColor.value;
+            const tier = parseInt(planningTier.value);
+            const description = planningDescription.value.trim();
+            const notes = planningNotes.value.trim();
+
+            if (!name) { showMessage('Please enter a site name', 'error'); return; }
+            if (!actor) { showMessage('Please enter an actor/operator', 'error'); return; }
+            if (isNaN(lat) || lat < -90 || lat > 90) { showMessage('Invalid latitude', 'error'); return; }
+            if (isNaN(lon) || lon < -180 || lon > 180) { showMessage('Invalid longitude', 'error'); return; }
+            if (isNaN(radius) || radius <= 0) { showMessage('Please enter a valid radius (> 0 km)', 'error'); return; }
+            if (isNaN(tier) || tier < 1 || tier > 3) { showMessage('Please select a valid tier', 'error'); return; }
+
+            const newSite = {
+                id: 'pending',
+                name: name,
+                actor: actor,
+                state: state || null,
+                lat: lat,
+                lon: lon,
+                radius_km: radius,
+                color: color,
+                tier: tier,
+                description: description,
+                notes: notes || '',
+                active: true
+            };
+
+            showConflictReport(newSite);
+        });
+
+        // --- Conflict Modal Events ---
+        conflictCloseBtn.addEventListener('click', closeConflictModal);
+        conflictCancelBtn.addEventListener('click', closeConflictModal);
+        conflictModalOverlay.addEventListener('click', (e) => {
+            if (e.target === conflictModalOverlay) closeConflictModal();
+        });
+        conflictConfirmBtn.addEventListener('click', confirmPlaceSite);
+
+        // --- Clear User Sites ---
+        clearUserSitesBtn.addEventListener('click', clearAllUserSites);
+
+        // --- Settings Events ---
         loadBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length === 0) return;
@@ -1835,6 +2740,7 @@
             stateLegendPanel.classList.toggle('visible', isStateModeActive);
             adjustBottomRightPanels();
             updateVisibility(activeLayers);
+            updateUserSiteVisibility();
         }
         stateModeToggle.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1857,6 +2763,21 @@
             showMessage(isInfoDebugActive ? 'Info Debug Panel Enabled' : 'Info Debug Panel Disabled', 'info');
             setTimeout(() => showMessage('', 'hidden'), 1500);
         });
+
+        function updateCrosshairUI() {
+            crosshairToggle.classList.toggle('on', isCrosshairVisible);
+            crosshairLabel.textContent = isCrosshairVisible ? 'ON' : 'OFF';
+            crosshairEl.classList.toggle('visible', isCrosshairVisible);
+        }
+
+        crosshairToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isCrosshairVisible = !isCrosshairVisible;
+            updateCrosshairUI();
+            showMessage(isCrosshairVisible ? 'Crosshair enabled' : 'Crosshair disabled', 'info');
+            setTimeout(() => showMessage('', 'hidden'), 1500);
+        });
+        updateCrosshairUI();
 
         function adjustBottomRightPanels() {
             if (isInfoDebugActive && isStateModeActive) {
@@ -1895,6 +2816,7 @@
         });
         updateRotateUI();
 
+        // --- Drag and Drop ---
         window.addEventListener('dragover', (e) => { e.preventDefault(); gearBtn.style.borderColor = '#aaccff'; });
         window.addEventListener('dragleave', (e) => { e.preventDefault(); gearBtn.style.borderColor = '#6688aa'; });
         window.addEventListener('drop', (e) => {
@@ -1919,6 +2841,8 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // --- Initialize ---
+        loadUserSites();
         buildLayers();
 
         let clock = new THREE.Clock();
@@ -1948,6 +2872,9 @@
             }
 
             const { lat, lon } = positionToLatLon(camera.position);
+            currentCameraLat = lat;
+            currentCameraLon = lon;
+
             const activeTags = getActiveTags();
             const overlappingFeatures = [];
             for (const feature of FEATURES) {
@@ -2014,7 +2941,6 @@
                 }
             }
 
-            // Dynamic disc radius scaling and label positioning based on zoom level (dist: 3.0 -> 1.1)
             const zoomProgress = Math.max(0, Math.min(1, (dist - 1.1) / (3.0 - 1.1)));
 
             for (const key in featureObjects) {
@@ -2064,6 +2990,40 @@
                 }
             }
 
+            // Update user site labels
+            for (const [id, obj] of userSiteObjects) {
+                const site = userSites.find(s => s.id === id);
+                if (!site || !site.active) continue;
+                
+                const label = obj.label;
+                if (label) {
+                    const isVisible = showLabels;
+                    if (isVisible) {
+                        const pos = latLonToPosition(site.lat, site.lon, MOON_3D_RADIUS);
+                        const targetNormal = pos.clone().normalize();
+                        const dot = Math.min(1, Math.max(-1, cameraDir.dot(targetNormal)));
+                        const angle = Math.acos(dot);
+                        const labelVisible = angle <= Math.PI / 4;
+                        label.visible = labelVisible;
+                        if (labelVisible) {
+                            const labelWorldPos = new THREE.Vector3();
+                            label.getWorldPosition(labelWorldPos);
+                            const labelDist = camera.position.distanceTo(labelWorldPos);
+                            const baseScaleY = 0.045 * labelDist;
+                            const baseScaleX = baseScaleY * 4.5;
+                            label.scale.set(baseScaleX, baseScaleY, 1);
+                            label.material.opacity = 1.0;
+                        } else {
+                            label.material.opacity = 0;
+                        }
+                    } else {
+                        label.visible = false;
+                        label.material.opacity = 0;
+                    }
+                }
+            }
+
+            // Update satellites
             for (const sat of satelliteList) {
                 if (sat.parentObject.visible) {
                     sat.group.visible = true;
@@ -2109,9 +3069,9 @@
 
         layersPanel.classList.remove('closed');
         layersToggle.classList.remove('visible');
-        showMessage('Standard lunar coordinate mapping active', 'info');
-        setTimeout(() => showMessage('', 'hidden'), 4000);
-        console.log('Standard lunar coordinate mapping initialized.');
+        showMessage('📐 Click "Plan" to plan a site at your current camera location', 'info');
+        setTimeout(() => showMessage('', 'hidden'), 5000);
+        console.log('Lunar Constraint Map with Camera-Based Planning and Curved Discs initialized.');
     </script>
 </body>
 </html>
