@@ -524,6 +524,65 @@
             margin-top: 2px;
         }
 
+        /* Feature Popup */
+        #feature-popup {
+            position: absolute;
+            top: 20px;
+            left: 360px;
+            background: rgba(10, 14, 28, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid #445566;
+            border-radius: 10px;
+            padding: 16px 20px;
+            min-width: 280px;
+            max-width: 340px;
+            z-index: 35;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+        #feature-popup.visible { display: flex; }
+        .popup-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #8899aa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .popup-close-btn:hover { color: #ffffff; }
+        .popup-field { display: flex; flex-direction: column; gap: 2px; }
+        .popup-field-label {
+            font-size: 0.72rem;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+        }
+        .popup-field-val {
+            font-size: 0.88rem;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+        .popup-report-btn {
+            margin-top: 4px;
+            padding: 8px 16px;
+            background: #2b82c9;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .popup-report-btn:hover { background: #3b92d9; }
+
         /* State Legend Panel */
         #state-legend-panel {
             position: absolute;
@@ -831,10 +890,40 @@
             </span>
             <button class="close-btn" id="layers-close" title="Close layers panel">X</button>
         </div>
+        <!-- Master Governance Toggles -->
+        <div id="governance-toggles" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #334455;">
+            <div id="governance-header" style="display:flex; align-items:center; justify-space-between; cursor:pointer; font-size: 0.75rem; font-weight: bold; color: #88aacc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                <span>GOVERNANCE OVERLAYS</span>
+                <span id="governance-arrow" style="transition: transform 0.2s;">&gt;</span>
+            </div>
+            <div id="governance-body" style="display:none;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#8899aa; cursor:pointer; margin-bottom:4px;">
+                    <input type="checkbox" id="assessment-status-toggle" checked />
+                    <span>Assessment Status &amp; Provisional Mode</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#8899aa; cursor:pointer; margin-bottom:4px;">
+                    <input type="checkbox" id="op-activity-toggle" checked />
+                    <span>Operational Activity Layer</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#8899aa; cursor:pointer; margin-bottom:4px;">
+                    <input type="checkbox" id="dynamic-harms-toggle" />
+                    <span>Dynamic Harms Layer (Computed)</span>
+                </label>
+                <div id="dynamic-harms-controls" style="margin-left: 20px; font-size: 0.75rem; color: #bbccdd; margin-bottom: 6px; display: none;">
+                    <label style="display:block; margin-bottom:2px;"><input type="checkbox" id="harm-psi" checked /> Plume Surface Interaction (PSI-v1.2)</label>
+                    <label style="display:block; margin-bottom:2px;"><input type="checkbox" id="harm-contamination" checked /> Volatile Contamination (CONTAM-v1.0)</label>
+                    <label style="display:block; margin-bottom:2px;"><input type="checkbox" id="harm-emi" checked /> Transient EMI (EMI-v1.1)</label>
+                </div>
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#8899aa; cursor:pointer;">
+                    <input type="checkbox" id="disputes-toggle" checked />
+                    <span>Disputes and Salience Overlay</span>
+                </label>
+            </div>
+        </div>
         <div id="layer-list"></div>
         <div id="user-sites-list" style="margin-top:12px;border-top:1px solid #445566;padding-top:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                <span style="font-size:0.85rem;font-weight:bold;color:#55ff88;">📋 Planning</span>
+                <span style="font-size:0.85rem;font-weight:bold;color:#55ff88;"> Planning</span>
                 <button id="clear-user-sites" style="background:none;border:none;color:#667;font-size:0.75rem;cursor:pointer;padding:2px 8px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.color='#ff5555'" onmouseout="this.style.color='#667'">Clear All</button>
             </div>
             <div id="user-sites-container"></div>
@@ -843,15 +932,40 @@
 
     <div id="layers-toggle" title="Show layers">Layers</div>
 
-    <!-- Centre overlap display -->
+    <!-- Feature Popup -->
+    <div id="feature-popup" class="hidden">
+        <button class="popup-close-btn" id="popup-close-btn">&times;</button>
+        <div class="popup-field">
+            <span class="popup-field-label">Name</span>
+            <span class="popup-field-val" id="popup-name"></span>
+        </div>
+        <div class="popup-field">
+            <span class="popup-field-label">Category</span>
+            <span class="popup-field-val" id="popup-category"></span>
+        </div>
+        <div class="popup-field">
+            <span class="popup-field-label">Tier</span>
+            <span class="popup-field-val" id="popup-tier"></span>
+        </div>
+        <div class="popup-field">
+            <span class="popup-field-label">What that means</span>
+            <span class="popup-field-val" id="popup-meaning"></span>
+        </div>
+        <button id="popup-report-btn" class="popup-report-btn">Report</button>
+    </div>
+
+    <!-- Centre overlap display (Lunar Telemetry HUD) -->
     <div id="centre-overlap-display">
-        <div class="hud-header"><span>⊕ LUNAR TELEMETRY</span></div>
+        <div class="hud-header">
+            <span>⊕ LUNAR TELEMETRY</span>
+            <span id="hud-status-dot" class="hud-status-dot"></span>
+        </div>
         <div class="hud-row"><span class="hud-label">LAT:</span><span class="hud-val" id="centre-lat">0.00° N</span></div>
         <div class="hud-row"><span class="hud-label">LON:</span><span class="hud-val" id="centre-lon">0.00° E</span></div>
         <div class="hud-status-container">
-            <span class="hud-status-dot" id="hud-status-dot"></span>
-            <span id="centre-overlap-text">Open</span>
+            <div id="centre-overlap-text">Open</div>
         </div>
+        <button id="telemetry-report-btn" class="popup-report-btn" style="margin-top:10px;width:100%;">Generate Report</button>
     </div>
 
     <!-- Info display -->
@@ -879,12 +993,12 @@
     <div id="planning-modal-overlay">
         <div id="planning-modal">
             <div class="planning-header">
-                <span class="title">📌 New Planned Site</span>
+                <span class="title"> New Planned Site</span>
                 <button class="close-btn" id="planning-close-btn" title="Close">X</button>
             </div>
             <div class="planning-body">
                 <div class="form-group">
-                    <label>📍 Current Camera Location</label>
+                    <label> Current Camera Location</label>
                     <div class="current-loc" id="current-location-display">Loading...</div>
                     <div class="hint">Site will be placed at the center of your view</div>
                 </div>
@@ -950,7 +1064,7 @@
     <div id="conflict-modal-overlay">
         <div id="conflict-modal">
             <div class="conflict-header">
-                <span class="title">⚠️ Conflict Assessment Report</span>
+                <span class="title"> Conflict Assessment Report</span>
                 <button class="close-btn" id="conflict-close-btn" title="Close">X</button>
             </div>
             <div class="conflict-body" id="conflict-body-content">
@@ -958,14 +1072,14 @@
             </div>
             <div class="conflict-footer">
                 <button class="btn btn-secondary" id="conflict-cancel-btn">Cancel</button>
-                <button class="btn btn-primary" id="conflict-confirm-btn">✓ Confirm & Place Site</button>
+                <button class="btn btn-primary" id="conflict-confirm-btn"> Confirm & Place Site</button>
             </div>
         </div>
     </div>
 
     <!-- Buttons -->
     <div id="help-btn" title="Help / Documentation">?</div>
-    <div id="planning-btn" title="Plan a site at your current camera location">📐 Plan</div>
+    <div id="planning-btn" title="Plan a site at your current camera location"> Plan</div>
     <div id="gear" title="Settings">Settings</div>
 
     <!-- Help Modal -->
@@ -1003,7 +1117,8 @@
                         <li><strong>Load GLB:</strong> Load custom 3D lunar mesh</li>
                         <li><strong>Reset View:</strong> Reset camera position</li>
                         <li><strong>Art. VI State Mode:</strong> Color features by responsible State Party</li>
-                        <li><strong>Info Debug Panel:</strong> Show/hide telemetry HUD</li>
+                        <li><strong>Surface Click Selection:</strong> Enable/disable clicking directly on the Moon surface to select features and open report dialogs (Default: OFF)</li>
+                        <li><strong>Info Debug Panel:</strong> Show/hide camera distance & debug info</li>
                         <li><strong>Lock N/S Pole:</strong> Restrict camera to equatorial plane</li>
                         <li><strong>Auto-rotate:</strong> Continuous globe rotation</li>
                         <li><strong>Glow Opacity:</strong> Adjust feature disc transparency</li>
@@ -1011,18 +1126,27 @@
                     </ul>
                 </div>
                 <div class="help-tab-pane" id="tab-layers">
-                    <h3>Layers Panel</h3>
+                    <h3>Layers & Governance Overlay Panel</h3>
+                    <p>The layers panel provides resource category filtering, orbit navigation, and master governance overlays for regulatory & technical evaluation:</p>
                     <ul>
-                        <li><strong>Global Checkbox:</strong> Toggle all layers</li>
-                        <li><strong>Category Accordion:</strong> Click to expand/collapse</li>
-                        <li><strong>Discs Toggle:</strong> Show/hide 3D discs per category</li>
-                        <li><strong>Layer Items:</strong> Click arrow to expand individual features</li>
-                        <li><strong>Planning Section:</strong> Shows user-added sites with delete controls and tier badges</li>
+                        <li><strong>Master Governance Overlays:</strong>
+                            <ul>
+                                <li><strong> Assessment Status & Provisional Mode:</strong> Renders map confidence into 4 states (Unassessed, Under Assessment, Assessed Open, Assessed Protected) with dates. Sites under active review carry provisional protection notices requiring public justification before proceeding.</li>
+                                <li><strong> Operational Activity Layer:</strong> Displays planned and active lunar surface missions, footprints, and triggers dynamic Article IX spatial overlap alerts when operational radii cross.</li>
+                                <li><strong> Dynamic Harms Layer (Computed):</strong> Computes procedural environmental footprints for Plume Surface Interaction (PSI-v1.2), Volatile Contamination (CONTAM-v1.0), and Transient EMI (EMI-v1.1) attached to operating assets.</li>
+                                <li><strong> Disputes, Salience & Recency:</strong> Highlights challenged designations with hatched textures, shows dispute register entries with deadlines, adjusts visual weight by evidence grade (A vs C), and flags status updates within 2 years.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Orbit Feature Navigation:</strong> Click any orbit feature (e.g. Gateway / NRHO Orbit) in the layer menu to frame the full orbital trajectory at distance 6.500, highlight orbital satellites, and generate reports without requiring surface Lat/Lon.</li>
+                        <li><strong>Global Checkbox:</strong> Toggle all resource layers on or off simultaneously without resetting governance modes.</li>
+                        <li><strong>Category Accordion:</strong> Expand or collapse resource categories (Physical, Extractable, Spatial, Environmental, Heritage, Intangible).</li>
+                        <li><strong>Discs Toggle:</strong> Toggle visual 3D surface discs for each category independently.</li>
+                        <li><strong>Planning Section:</strong> Manage custom user-planned sites with real-time OST conflict analysis.</li>
                     </ul>
                 </div>
                 <div class="help-tab-pane" id="tab-planning">
                     <h3>Planning Mode</h3>
-                    <p>Click the <strong>📐 Plan</strong> button to plan a site at your current camera location.</p>
+                    <p>Click the <strong> Plan</strong> button to plan a site at your current camera location.</p>
                     <ul>
                         <li><strong>Move the camera</strong> to your desired landing location using orbit and zoom controls.</li>
                         <li><strong>Click "Plan"</strong> to open the planning form with the current coordinates pre-filled.</li>
@@ -1036,7 +1160,7 @@
                         <li><strong>Data persistence:</strong> Your planned sites are saved in local storage.</li>
                     </ul>
                     <div class="article-box">
-                        <strong>💡 Tier System:</strong>
+                        <strong> Tier System:</strong>
                         <p><strong>Tier 1</strong> - Critical constraints requiring mandatory Art. IX consultation.<br>
                         <strong>Tier 2</strong> - Significant interests requiring due regard and coordination.<br>
                         <strong>Tier 3</strong> - General activities with standard Art. XI notification.</p>
@@ -1078,6 +1202,13 @@
             <div class="toggle">
                 <span class="toggle-label" id="state-mode-label" style="color:#77ccff;">OFF</span>
                 <div class="toggle-switch" id="state-mode-toggle"><div class="slider"></div></div>
+            </div>
+        </div>
+        <div class="settings-item">
+            <span class="label">Surface Click Selection</span>
+            <div class="toggle">
+                <span class="toggle-label" id="surface-click-label">OFF</span>
+                <div class="toggle-switch" id="surface-click-toggle"><div class="slider"></div></div>
             </div>
         </div>
         <div class="settings-item">
@@ -1145,6 +1276,8 @@
         const lockLabel = document.getElementById('lock-label');
         const stateModeToggle = document.getElementById('state-mode-toggle');
         const stateModeLabel = document.getElementById('state-mode-label');
+        const surfaceClickToggle = document.getElementById('surface-click-toggle');
+        const surfaceClickLabel = document.getElementById('surface-click-label');
         const stateLegendPanel = document.getElementById('state-legend-panel');
         const stateLegendList = document.getElementById('state-legend-list');
         const infoDebugToggle = document.getElementById('info-debug-toggle');
@@ -1177,6 +1310,7 @@
         const clearUserSitesBtn = document.getElementById('clear-user-sites');
 
         let isStateModeActive = false;
+        let isSurfaceClickSelectionActive = false;
         let isInfoDebugActive = false;
         let isCrosshairVisible = false;
         let pendingSiteData = null;
@@ -1201,6 +1335,18 @@
         const centreLonEl = document.getElementById('centre-lon');
         const centreOverlapText = document.getElementById('centre-overlap-text');
         const hudStatusDotEl = document.getElementById('hud-status-dot');
+        const assessmentStatusToggle = document.getElementById('assessment-status-toggle');
+        const opActivityToggle = document.getElementById('op-activity-toggle');
+        const dynamicHarmsToggle = document.getElementById('dynamic-harms-toggle');
+        const disputesToggle = document.getElementById('disputes-toggle');
+        let isAssessmentStatusMode = true;
+        let isOpActivityEnabled = true;
+        let isDynamicHarmsEnabled = false;
+        let isDisputesEnabled = true;
+        let harmPsiEnabled = true;
+        let harmContamEnabled = true;
+        let harmEmiEnabled = true;
+        const harmMeshes = [];
 
         // --- User Sites Storage ---
         let userSites = [];
@@ -1246,7 +1392,7 @@
         const INITIAL_CAM_POS = new THREE.Vector3(0, 0.6, 4.5);
         const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.copy(INITIAL_CAM_POS);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.body.appendChild(renderer.domElement);
@@ -1374,7 +1520,7 @@
             
             const latStr = lat >= 0 ? `${lat.toFixed(4)}° N` : `${(-lat).toFixed(4)}° S`;
             const lonStr = lonToDisplay(lon);
-            currentLocationDisplay.textContent = `📍 ${latStr}, ${lonStr}`;
+            currentLocationDisplay.textContent = ` ${latStr}, ${lonStr}`;
 
             planningName.value = '';
             planningActor.value = '';
@@ -1395,7 +1541,20 @@
         function checkConflicts(newSite) {
             const overlaps = [];
 
-            for (const feature of FEATURES) {
+            
+            // Filter out operational activities if opActivityToggle is unchecked
+            const activeFeaturesList = FEATURES.filter(f => {
+                if (f.tags && f.tags.includes('operational_activity')) {
+                    return isOpActivityEnabled;
+                }
+                return true;
+            });
+
+            // Store operational footprints for overlap detection
+            const opFootprints = [];
+
+            for (const feature of activeFeaturesList) {
+
                 if (!feature.tags) continue;
                 const featureRadius = feature.radius_km || DEFAULT_RADIUS_KM;
                 const dist = distanceBetween(newSite.lat, newSite.lon, feature.lat, feature.lon);
@@ -1448,7 +1607,7 @@
                 analysis.push({
                     article: 'Art. IX',
                     severity: 'HIGH',
-                    message: `⚠️ Site overlaps with ${highTierOverlaps.length} Tier 1 zone(s). Mandatory consultation with affected States required before proceeding.`,
+                    message: ` Site overlaps with ${highTierOverlaps.length} Tier 1 zone(s). Mandatory consultation with affected States required before proceeding.`,
                     details: highTierOverlaps.map(o => `• ${o.name} (${o.distance.toFixed(1)} km overlap)`).join('\n')
                 });
             } else if (mediumTierOverlaps.length > 0) {
@@ -1469,7 +1628,7 @@
                 analysis.push({
                     article: 'Art. IX',
                     severity: 'CLEAR',
-                    message: '✅ No overlaps detected. No Art. IX consultation required.'
+                    message: ' No overlaps detected. No Art. IX consultation required.'
                 });
             }
 
@@ -1484,7 +1643,7 @@
                 analysis.push({
                     article: 'Art. VI',
                     severity: 'WARNING',
-                    message: '⚠️ No State Party entered. Art. VI requires a State to authorize and supervise national activities. Please specify a State Party.'
+                    message: ' No State Party entered. Art. VI requires a State to authorize and supervise national activities. Please specify a State Party.'
                 });
             }
 
@@ -1503,19 +1662,19 @@
                 analysis.push({
                     article: 'Art. IX',
                     severity: 'INFO',
-                    message: `🔴 Tier 1 site: Ensure all Art. IX consultation requirements are met before proceeding.`
+                    message: ` Tier 1 site: Ensure all Art. IX consultation requirements are met before proceeding.`
                 });
             } else if (newSite.tier === 2) {
                 analysis.push({
                     article: 'Art. IX',
                     severity: 'INFO',
-                    message: `🟡 Tier 2 site: Coordinate with affected parties and exercise due regard.`
+                    message: ` Tier 2 site: Coordinate with affected parties and exercise due regard.`
                 });
             } else {
                 analysis.push({
                     article: 'Art. IX',
                     severity: 'INFO',
-                    message: `🟢 Tier 3 site: Standard notification and due regard apply.`
+                    message: ` Tier 3 site: Standard notification and due regard apply.`
                 });
             }
 
@@ -1524,13 +1683,13 @@
                 analysis.push({
                     article: 'Art. XI',
                     severity: 'INFO',
-                    message: '✅ No conflicts detected. Proceed with Art. XI notification to UN Secretary-General.'
+                    message: ' No conflicts detected. Proceed with Art. XI notification to UN Secretary-General.'
                 });
             } else {
                 analysis.push({
                     article: 'Art. XI',
                     severity: 'INFO',
-                    message: '📋 Report site details and any coordination activities to UN Secretary-General as per Art. XI.'
+                    message: ' Report site details and any coordination activities to UN Secretary-General as per Art. XI.'
                 });
             }
 
@@ -1550,34 +1709,34 @@
 
             let html = `
                 <div class="conflict-summary">
-                    <h4>📋 Site: ${newSite.name}</h4>
+                    <h4> Site: ${newSite.name}</h4>
                     <div style="font-size:0.85rem;color:#99b;">
-                        <div>📍 ${newSite.lat.toFixed(4)}°, ${newSite.lon.toFixed(4)}°</div>
-                        <div>📏 Radius: ${newSite.radius_km} km</div>
-                        <div>🏛️ Actor: ${newSite.actor || 'Unspecified'}</div>
-                        ${newSite.state && newSite.state.trim() ? `<div>🏴 State: ${newSite.state}</div>` : ''}
-                        <div>🏷️ Tier: ${tierLabel}</div>
+                        <div> ${newSite.lat.toFixed(4)}°, ${newSite.lon.toFixed(4)}°</div>
+                        <div> Radius: ${newSite.radius_km} km</div>
+                        <div> Actor: ${newSite.actor || 'Unspecified'}</div>
+                        ${newSite.state && newSite.state.trim() ? `<div> State: ${newSite.state}</div>` : ''}
+                        <div> Tier: ${tierLabel}</div>
                         <div style="margin-top:6px;font-size:0.8rem;color:#667;">${newSite.description || ''}</div>
                     </div>
                 </div>
                 <div style="margin-bottom:12px;">
                     <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:0.85rem;">
-                        <span>⚠️ Overlaps: <strong style="color:${overlaps.length > 0 ? '#ffaa55' : '#55ff88'}">${overlaps.length}</strong></span>
-                        <span>🏷️ Tier 1: <strong style="color:${overlaps.filter(o => o.tier === 1).length > 0 ? '#ff5555' : '#55ff88'}">${overlaps.filter(o => o.tier === 1).length}</strong></span>
-                        <span>🏷️ Tier 2: <strong>${overlaps.filter(o => o.tier === 2).length}</strong></span>
-                        <span>🏷️ Tier 3: <strong>${overlaps.filter(o => o.tier === 3).length}</strong></span>
+                        <span> Overlaps: <strong style="color:${overlaps.length > 0 ? '#ffaa55' : '#55ff88'}">${overlaps.length}</strong></span>
+                        <span> Tier 1: <strong style="color:${overlaps.filter(o => o.tier === 1).length > 0 ? '#ff5555' : '#55ff88'}">${overlaps.filter(o => o.tier === 1).length}</strong></span>
+                        <span> Tier 2: <strong>${overlaps.filter(o => o.tier === 2).length}</strong></span>
+                        <span> Tier 3: <strong>${overlaps.filter(o => o.tier === 3).length}</strong></span>
                     </div>
                 </div>
             `;
 
-            html += `<h4 style="color:#55aaff;margin-bottom:8px;">⚖️ OST Analysis</h4>`;
+            html += `<h4 style="color:#55aaff;margin-bottom:8px;"> OST Analysis</h4>`;
             for (const item of analysis) {
                 const severityClass = item.severity === 'HIGH' ? 'severity-high' :
                                     item.severity === 'MEDIUM' || item.severity === 'WARNING' ? 'severity-medium' :
                                     item.severity === 'CLEAR' ? '' : 'severity-low';
                 html += `
                     <div class="conflict-item ${severityClass}">
-                        <div class="item-title">${item.article} ${item.severity !== 'CLEAR' ? `[${item.severity}]` : '✅'}</div>
+                        <div class="item-title">${item.article} ${item.severity !== 'CLEAR' ? `[${item.severity}]` : ''}</div>
                         <div class="item-detail">${item.message}</div>
                         ${item.details ? `<div style="font-size:0.8rem;color:#889;margin-top:4px;white-space:pre-line;">${item.details}</div>` : ''}
                     </div>
@@ -1585,7 +1744,7 @@
             }
 
             if (overlaps.length > 0) {
-                html += `<h4 style="color:#55aaff;margin:12px 0 8px 0;">📌 Overlapping Features</h4>`;
+                html += `<h4 style="color:#55aaff;margin:12px 0 8px 0;"> Overlapping Features</h4>`;
                 for (const overlap of overlaps) {
                     const tierColor = overlap.tier === 1 ? '#ff5555' : overlap.tier === 2 ? '#ffaa55' : '#6688aa';
                     html += `
@@ -1607,15 +1766,15 @@
             pendingSiteData = newSite;
 
             if (hasHighSeverity) {
-                conflictConfirmBtn.textContent = '⚠️ Proceed with Caution';
+                conflictConfirmBtn.textContent = ' Proceed with Caution';
                 conflictConfirmBtn.style.background = '#ff5555';
                 conflictConfirmBtn.style.color = '#fff';
             } else if (hasMediumSeverity) {
-                conflictConfirmBtn.textContent = '⚠️ Confirm & Place';
+                conflictConfirmBtn.textContent = ' Confirm & Place';
                 conflictConfirmBtn.style.background = '#ffaa55';
                 conflictConfirmBtn.style.color = '#000';
             } else {
-                conflictConfirmBtn.textContent = '✅ Confirm & Place Site';
+                conflictConfirmBtn.textContent = ' Confirm & Place Site';
                 conflictConfirmBtn.style.background = '#55ff88';
                 conflictConfirmBtn.style.color = '#000';
             }
@@ -1640,7 +1799,7 @@
             renderUserSites();
             updateUserSiteVisibility();
 
-            showMessage(`✅ Site "${site.name}" placed successfully!`, 'success');
+            showMessage(` Site "${site.name}" placed successfully`, 'success');
             setTimeout(() => showMessage('', 'hidden'), 3000);
 
             closeConflictModal();
@@ -1653,7 +1812,7 @@
             saveUserSites();
             renderUserSites();
             updateUserSiteVisibility();
-            showMessage('🗑️ Site deleted', 'info');
+            showMessage(' Site deleted', 'info');
             setTimeout(() => showMessage('', 'hidden'), 1500);
         }
 
@@ -1664,7 +1823,7 @@
                 saveUserSites();
                 renderUserSites();
                 updateUserSiteVisibility();
-                showMessage('🗑️ All planned sites cleared', 'info');
+                showMessage(' All planned sites cleared', 'info');
                 setTimeout(() => showMessage('', 'hidden'), 1500);
             }
         }
@@ -1730,7 +1889,7 @@
             ring.computeLineDistances();
 
             // Label
-            const labelTex = createLabelTexture(site.name + (site.tier ? ` [T${site.tier}]` : ''), 24);
+            const labelTex = createLabelTexture(site.name + (site.tier ? ` [T${site.tier}]` : ''), 24, '(PLANNED)');
             const labelMat = new THREE.SpriteMaterial({
                 map: labelTex,
                 transparent: true,
@@ -1753,7 +1912,7 @@
             return { group, disc, ring, label };
         }
 
-        function createLabelTexture(text, fontSize = 32) {
+        function createLabelTexture(text, fontSize = 32, subtext = null) {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 96;
@@ -1765,13 +1924,16 @@
             ctx.shadowColor = 'rgba(0,0,0,0.9)';
             ctx.shadowBlur = 20;
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, canvas.width/2, canvas.height/2);
+            const textY = subtext ? canvas.height / 2 - 8 : canvas.height / 2;
+            ctx.fillText(text, canvas.width/2, textY);
             ctx.shadowBlur = 0;
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(text, canvas.width/2, canvas.height/2);
-            ctx.font = `${fontSize * 0.4}px Arial, sans-serif`;
-            ctx.fillStyle = 'rgba(85,255,136,0.6)';
-            ctx.fillText('(PLANNED)', canvas.width/2, canvas.height - 14);
+            ctx.fillText(text, canvas.width/2, textY);
+            if (subtext) {
+                ctx.font = `${fontSize * 0.4}px Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(85,255,136,0.8)';
+                ctx.fillText(subtext, canvas.width/2, canvas.height - 14);
+            }
             const texture = new THREE.CanvasTexture(canvas);
             texture.needsUpdate = true;
             return texture;
@@ -1812,7 +1974,7 @@
                         <span style="flex:1;font-size:0.8rem;">${site.name}</span>
                         <span class="tier-badge">T${tierLabel}</span>
                         <span style="font-size:0.7rem;color:#667;">${site.radius_km}km</span>
-                        <button class="delete-btn" data-id="${site.id}" title="Delete site">✕</button>
+                        <button class="delete-btn" data-id="${site.id}" title="Delete site"></button>
                     </div>
                 `;
             }
@@ -1851,11 +2013,16 @@
             return activeTags;
         }
 
-        // --- FIXED: getFeatureStatus now checks user sites even when no layers are active ---
+        let currentTelemetryFeature = null;
+        let currentTelemetryLat = 0;
+        let currentTelemetryLon = 0;
+
         function getFeatureStatus(lat, lon) {
+            currentTelemetryLat = lat;
+            currentTelemetryLon = lon;
             const overlappingFeatures = [];
 
-            // ALWAYS check user sites first - they should show regardless of layer state
+            // ALWAYS check user sites first
             for (const site of userSites) {
                 if (!site.active) continue;
                 const distKm = distanceBetween(lat, lon, site.lat, site.lon);
@@ -1876,77 +2043,65 @@
                 }
             }
 
-            // If no layers active, return user sites only (or null if none)
-            if (activeLayers.size === 0) {
-                if (overlappingFeatures.length === 0) return null;
-                overlappingFeatures.sort((a, b) => a.distKm - b.distKm);
-                const { feature, distKm, isUserSite } = overlappingFeatures[0];
-                let html = `<div class="hud-feature-title">${feature.name}${isUserSite ? ' 📋' : ''}</div>`;
-                html += `<div class="hud-detail-line"><strong>Category:</strong> Planning</div>`;
-                const tierObj = TIER_DEFS[feature.tier] || TIER_DEFS[3];
-                html += `<div class="hud-detail-line"><strong>Tier:</strong> Tier ${feature.tier || 3} (${tierObj.label})</div>`;
-                if (feature.state && feature.state.trim()) {
-                    html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${feature.state}</div>`;
-                } else {
-                    html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> Not specified</div>`;
+            // Check FEATURES if active tags exist
+            if (activeLayers.size > 0) {
+                const activeTags = getActiveTags();
+                const activeFeaturesList = FEATURES.filter(f => {
+                    if (f.tags && f.tags.includes('operational_activity')) {
+                        return isOpActivityEnabled;
+                    }
+                    return true;
+                });
+
+                for (const feature of activeFeaturesList) {
+                    if (!feature.tags || !feature.tags.some(t => activeTags.has(t))) continue;
+                    if (featureEnabledState.has(feature.id) && !featureEnabledState.get(feature.id)) continue;
+
+                    const geom = feature.geometry;
+                    const type = geom ? geom.type : 'point';
+                    if (type === 'orbit') continue;
+                    let distKm = 0;
+                    let overlaps = false;
+                    if (type === 'hemisphere') {
+                        const hLat = geom.lat ?? 0;
+                        const hLon = geom.lon ?? 180;
+                        const hPos = latLonToPosition(hLat, hLon, 1);
+                        const curPos = latLonToPosition(lat, lon, 1);
+                        if (hPos.dot(curPos) > 0) {
+                            overlaps = true;
+                            distKm = distanceBetween(lat, lon, hLat, hLon);
+                        }
+                    } else {
+                        const featureRadius = feature.radius_km || DEFAULT_RADIUS_KM;
+                        const detectionRadius = Math.max(featureRadius, 150);
+                        distKm = distanceBetween(lat, lon, feature.lat, feature.lon);
+                        if (distKm < detectionRadius) overlaps = true;
+                    }
+                    if (overlaps) {
+                        overlappingFeatures.push({ feature, distKm, isUserSite: false });
+                    }
                 }
-                html += `<div class="hud-detail-line"><strong>Source:</strong> User-planned</div>`;
-                html += `<div class="hud-detail-line"><strong>Notes:</strong> ${feature.note || 'No description'}</div>`;
+            }
+
+            if (overlappingFeatures.length === 0) {
+                currentTelemetryFeature = null;
+                const latStr = lat >= 0 ? `${lat.toFixed(2)}° N` : `${(-lat).toFixed(2)}° S`;
+                const lonStr = lonToDisplay(lon);
+                let html = `<div class="hud-detail-line"><strong>Feature:</strong> Open Surface (${latStr}, ${lonStr})</div>`;
+                html += `<div class="hud-detail-line"><strong>Type:</strong> Unassessed</div>`;
+                html += `<div class="hud-detail-line"><strong>Tier or status:</strong> Unassessed</div>`;
+                html += `<div class="hud-detail-line"><strong>State:</strong> None</div>`;
                 return {
                     html,
-                    tier: feature.tier || 3,
-                    articles: feature.articles || []
+                    tier: 3,
+                    articles: []
                 };
             }
 
-            // Layers are active - check features
-            const activeTags = getActiveTags();
-
-            for (const feature of FEATURES) {
-                if (!feature.tags || !feature.tags.some(t => activeTags.has(t))) continue;
-                if (featureEnabledState.has(feature.id) && !featureEnabledState.get(feature.id)) continue;
-
-                const geom = feature.geometry;
-                const type = geom ? geom.type : 'point';
-                let distKm = 0;
-                let overlaps = false;
-                if (type === 'hemisphere') {
-                    const hLat = geom.lat ?? 0;
-                    const hLon = geom.lon ?? 180;
-                    const hPos = latLonToPosition(hLat, hLon, 1);
-                    const curPos = latLonToPosition(lat, lon, 1);
-                    if (hPos.dot(curPos) > 0) {
-                        overlaps = true;
-                        distKm = distanceBetween(lat, lon, hLat, hLon);
-                    }
-                } else if (type === 'orbit') {
-                    const entry = featureObjects[feature.id];
-                    if (entry && entry.satellite && entry.satellite.group) {
-                        const satLatLon = positionToLatLon(entry.satellite.group.position);
-                        distKm = distanceBetween(lat, lon, satLatLon.lat, satLatLon.lon);
-                        if (distKm < 800) overlaps = true;
-                    } else {
-                        distKm = 500;
-                        overlaps = true;
-                    }
-                } else {
-                    const featureRadius = feature.radius_km || DEFAULT_RADIUS_KM;
-                    const detectionRadius = Math.max(featureRadius, 150);
-                    distKm = distanceBetween(lat, lon, feature.lat, feature.lon);
-                    if (distKm < detectionRadius) overlaps = true;
-                }
-                if (overlaps) {
-                    overlappingFeatures.push({ feature, distKm, isUserSite: false });
-                }
-            }
-
-            if (overlappingFeatures.length === 0) return null;
-
             overlappingFeatures.sort((a, b) => a.distKm - b.distKm);
-            const { feature, distKm, isUserSite } = overlappingFeatures[0];
+            const { feature, isUserSite } = overlappingFeatures[0];
+            currentTelemetryFeature = feature;
 
-            let html = `<div class="hud-feature-title">${feature.name}${isUserSite ? ' 📋' : ''}</div>`;
-            
             let primaryLayerKey = null;
             for (const key of layerPriority) {
                 if (activeLayers.has(key)) {
@@ -1958,22 +2113,20 @@
                 }
             }
             const categoryLabel = primaryLayerKey && LAYER_DEFS[primaryLayerKey] ? LAYER_DEFS[primaryLayerKey].label : (isUserSite ? 'Planning' : 'General');
-            html += `<div class="hud-detail-line"><strong>Category:</strong> ${categoryLabel}</div>`;
 
-            const tierObj = TIER_DEFS[feature.tier] || TIER_DEFS[3];
-            html += `<div class="hud-detail-line"><strong>Tier:</strong> Tier ${feature.tier || 3} (${tierObj.label})</div>`;
+            const statusText = feature.review_status ? feature.review_status.replace('_', ' ').toUpperCase() : `Tier ${feature.tier || 3}`;
+            const stateText = feature.state && feature.state.trim() ? feature.state : 'None';
 
-            if (feature.state && feature.state.trim()) {
-                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${feature.state}</div>`;
-            } else {
-                html += `<div class="hud-detail-line"><strong>Art. VI Resp:</strong> ${isUserSite ? 'Not specified' : 'None. Article II. Natural feature not subject to appropriation.'}</div>`;
+            let html = `<div class="hud-detail-line"><strong>Feature:</strong> ${feature.name}</div>`;
+            html += `<div class="hud-detail-line"><strong>Type:</strong> ${categoryLabel}</div>`;
+            html += `<div class="hud-detail-line"><strong>Tier or status:</strong> ${statusText}</div>`;
+            html += `<div class="hud-detail-line"><strong>State:</strong> ${stateText}</div>`;
+
+            // Optional 5th line only for overlap
+            if (overlappingFeatures.length > 1) {
+                const otherNames = overlappingFeatures.slice(1).map(o => o.feature.name).join(', ');
+                html += `<div class="hud-detail-line" style="color:#ffaa00;"><strong>Overlap:</strong> ${otherNames}</div>`;
             }
-
-            const sourceText = feature.source || (isUserSite ? 'User-planned' : 'Unverified. Pending source confirmation.');
-            html += `<div class="hud-detail-line"><strong>Source:</strong> ${sourceText}</div>`;
-
-            const noteText = feature.note || (isUserSite ? (feature.description || 'No description') : 'No additional note.');
-            html += `<div class="hud-detail-line"><strong>Notes:</strong> ${noteText}</div>`;
 
             return {
                 html,
@@ -2009,6 +2162,118 @@
             return group;
         }
 
+        
+        function createHatchedTexture(baseColorHex, lineAngle = 45) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = baseColorHex;
+            ctx.beginPath();
+            ctx.arc(64, 64, 60, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            for (let i = -128; i < 256; i += 16) {
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i + 128, 128);
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = baseColorHex;
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.arc(64, 64, 60, 0, Math.PI * 2);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function createPulsatingRingTexture(colorHex) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = colorHex + '33'; // 20% opacity fill
+            ctx.beginPath();
+            ctx.arc(64, 64, 58, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = colorHex;
+            ctx.lineWidth = 6;
+            ctx.setLineDash([12, 8]);
+            ctx.beginPath();
+            ctx.arc(64, 64, 58, 0, Math.PI * 2);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        
+        function getFeatureVisualProps(feature) {
+            let color = '#888899';
+            let opacity = 0.4;
+            let isDashed = false;
+            let useTexture = null;
+
+            if (isAssessmentStatusMode) {
+                switch (feature.review_status) {
+                    case 'unassessed':
+                        color = '#888899';
+                        opacity = 0.2;
+                        isDashed = true;
+                        break;
+                    case 'under_assessment':
+                        color = '#ffaa00'; // Amber provisional protection
+                        opacity = 0.5;
+                        useTexture = 'provisional';
+                        break;
+                    case 'assessed_open':
+                        color = '#94a3b8'; // Muted slate outline
+                        opacity = 0.05; // Thin outline, virtually no fill
+                        break;
+                    case 'assessed_protected':
+                        color = '#64748b'; // Muted slate fill
+                        opacity = 0.4;
+                        break;
+                    default:
+                        color = '#888899';
+                        opacity = 0.2;
+                }
+            } else {
+                // Tier color default
+                const tierObj = TIER_DEFS[feature.tier] || TIER_DEFS[3];
+                color = tierObj.color || '#888899';
+                if (feature.tags && feature.tags.includes('operational_activity')) {
+                    color = '#38bdf8';
+                }
+            }
+
+            let isRecent = false;
+            if (feature.date) {
+                const fYear = parseInt(feature.date.substring(0, 4));
+                if (!isNaN(fYear) && fYear >= 2024) {
+                    isRecent = true;
+                }
+            }
+
+            // Salience adjustments if disputes/salience mode active
+            if (isDisputesEnabled) {
+                if (feature.evidence_grade === 'A') opacity = Math.min(1.0, opacity * 1.4);
+                else if (feature.evidence_grade === 'C') opacity = opacity * 0.5;
+            }
+
+            return { color, opacity, isDashed, useTexture, isRecent };
+        }
+
         function buildLayers() {
             for (const key in featureObjects) {
                 const entry = featureObjects[key];
@@ -2024,7 +2289,20 @@
             allLabels.length = 0;
             satelliteList.length = 0;
 
-            for (const feature of FEATURES) {
+            
+            // Filter out operational activities if opActivityToggle is unchecked
+            const activeFeaturesList = FEATURES.filter(f => {
+                if (f.tags && f.tags.includes('operational_activity')) {
+                    return isOpActivityEnabled;
+                }
+                return true;
+            });
+
+            // Store operational footprints for overlap detection
+            const opFootprints = [];
+
+            for (const feature of activeFeaturesList) {
+
                 let discObject = null;
                 let labelSprite = null;
                 let satelliteObj = null;
@@ -2038,17 +2316,59 @@
                     const targetNormal = pos.clone().normalize();
 
                     const discGeo = createCurvedDiscGeometry(featureRadiusKm, 1.002);
-                    const discMat = new THREE.MeshBasicMaterial({
-                        color: new THREE.Color(color),
+                    const visualProps = getFeatureVisualProps(feature);
+                    const discMatProps = {
+                        color: new THREE.Color(visualProps.color),
                         transparent: true,
-                        opacity: 0.5,
+                        opacity: visualProps.opacity,
                         side: THREE.DoubleSide,
                         depthWrite: false,
                         depthTest: true,
-                    });
+                    };
+                    if (visualProps.useTexture === 'provisional') {
+                        discMatProps.map = createPulsatingRingTexture(visualProps.color);
+                    }
+                    const discMat = new THREE.MeshBasicMaterial(discMatProps);
                     discObject = new THREE.Mesh(discGeo, discMat);
+                    discObject.userData = { featureId: feature.id };
                     discObject.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
                     allGlowMeshes.push(discObject);
+                    // Create dynamic harms meshes if operational activity
+                    if (feature.tags && (feature.tags.includes('operational_activity') || feature.tags.includes('landing'))) {
+                        const pos = latLonToPosition(feature.lat, feature.lon, MOON_3D_RADIUS);
+                        const targetNormal = pos.clone().normalize();
+
+                        // 1. PSI (Plume Surface Interaction)
+                        const psiGeo = createCurvedDiscGeometry((feature.radius_km || 10) * 1.8, 1.004);
+                        const psiMat = new THREE.MeshBasicMaterial({ color: 0xff3300, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false });
+                        const psiMesh = new THREE.Mesh(psiGeo, psiMat);
+                        psiMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+                        psiMesh.userData = { harmType: 'psi', featureId: feature.id };
+                        if (currentMoon) currentMoon.add(psiMesh);
+                        psiMesh.visible = false;
+                        harmMeshes.push(psiMesh);
+
+                        // 2. Contamination Deposition
+                        const contamGeo = createCurvedDiscGeometry((feature.radius_km || 10) * 3.2, 1.0035);
+                        const contamMat = new THREE.MeshBasicMaterial({ color: 0xaa00ff, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false });
+                        const contamMesh = new THREE.Mesh(contamGeo, contamMat);
+                        contamMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+                        contamMesh.userData = { harmType: 'contam', featureId: feature.id };
+                        if (currentMoon) currentMoon.add(contamMesh);
+                        contamMesh.visible = false;
+                        harmMeshes.push(contamMesh);
+
+                        // 3. Transient EMI
+                        const emiGeo = createCurvedDiscGeometry((feature.radius_km || 10) * 2.4, 1.0045);
+                        const emiMat = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false });
+                        const emiMesh = new THREE.Mesh(emiGeo, emiMat);
+                        emiMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+                        emiMesh.userData = { harmType: 'emi', featureId: feature.id };
+                        if (currentMoon) currentMoon.add(emiMesh);
+                        emiMesh.visible = false;
+                        harmMeshes.push(emiMesh);
+                    }
+
 
                     const labelTex = createLabelTexture(feature.name, 30);
                     const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true, depthTest: false, depthWrite: false, opacity: 0, sizeAttenuation: true });
@@ -2070,6 +2390,7 @@
                     const hLon = geom.lon ?? 180;
                     const targetNormal = latLonToPosition(hLat, hLon, 1).normalize();
                     mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+                    mesh.userData = { featureId: feature.id };
                     discObject = mesh;
                 }
                 else if (type === 'orbit') {
@@ -2098,6 +2419,7 @@
                         mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false });
                     }
                     const line = new THREE.Line(orbitGeo, mat);
+                    line.userData = { featureId: feature.id };
                     if (isDashed) line.computeLineDistances();
                     discObject = line;
 
@@ -2112,15 +2434,45 @@
                     }
                 }
 
+                let opFootprintMesh = null;
+                if (feature.tags && feature.tags.includes('operational_activity') && (feature.mission_status === 'planned' || feature.mission_status === 'active')) {
+                    const opRadKm = feature.operational_radius_km || (feature.radius_km * 1.5);
+                    const opGeo = createCurvedDiscGeometry(opRadKm, 1.003);
+                    const opMat = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color('#00ffcc'),
+                        transparent: true,
+                        opacity: 0.2,
+                        side: THREE.DoubleSide,
+                        depthWrite: false,
+                        depthTest: true
+                    });
+                    opFootprintMesh = new THREE.Mesh(opGeo, opMat);
+                    const pos = latLonToPosition(feature.lat, feature.lon, MOON_3D_RADIUS);
+                    const targetNormal = pos.clone().normalize();
+                    opFootprintMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
+                    if (currentMoon) currentMoon.add(opFootprintMesh);
+                    opFootprintMesh.visible = false;
+                    allGlowMeshes.push(opFootprintMesh);
+
+                    opFootprints.push({
+                        feature,
+                        lat: feature.lat,
+                        lon: feature.lon,
+                        radiusKm: opRadKm
+                    });
+                }
+
                 featureObjects[feature.id] = {
                     discObject,
+                    opFootprintMesh,
                     label: labelSprite || null,
                     satellite: satelliteObj || null,
                     type,
-                    tags: feature.tags || []
+                    tags: feature.tags || [],
+                    feature
                 };
-                featureActiveState.set(feature.id, false);
-                featureEnabledState.set(feature.id, false);
+                if (!featureActiveState.has(feature.id)) featureActiveState.set(feature.id, false);
+                if (!featureEnabledState.has(feature.id)) featureEnabledState.set(feature.id, false);
 
                 if (currentMoon) {
                     if (discObject) currentMoon.add(discObject);
@@ -2132,6 +2484,7 @@
                 }
 
                 if (discObject) discObject.visible = false;
+                if (opFootprintMesh) opFootprintMesh.visible = false;
                 if (labelSprite) labelSprite.visible = false;
                 if (satelliteObj) {
                     satelliteObj.group.visible = false;
@@ -2140,7 +2493,7 @@
             }
 
             buildLayerUI();
-            updateVisibility(new Set());
+            updateVisibility(activeLayers);
             updateGlobalToggle();
             renderUserSites();
             updateUserSiteVisibility();
@@ -2166,10 +2519,9 @@
 
         function buildLayerUI() {
             layerList.innerHTML = '';
-            activeLayers.clear();
 
             for (const [catName, layerKeys] of Object.entries(CATEGORIES)) {
-                categoryDiscState.set(catName, true);
+                if (!categoryDiscState.has(catName)) categoryDiscState.set(catName, true);
                 const catDiv = document.createElement('div');
                 catDiv.className = 'category';
                 const header = document.createElement('div');
@@ -2179,7 +2531,7 @@
                 arrow.textContent = '>';
                 const catCheck = document.createElement('input');
                 catCheck.type = 'checkbox';
-                catCheck.checked = false;
+                catCheck.checked = layerKeys.length > 0 && layerKeys.every(k => activeLayers.has(k));
                 catCheck.dataset.category = catName;
                 const nameSpan = document.createElement('span');
                 nameSpan.className = 'cat-name';
@@ -2200,7 +2552,7 @@
                 discToggle.title = 'Show/hide discs for this category';
                 const discCheck = document.createElement('input');
                 discCheck.type = 'checkbox';
-                discCheck.checked = true;
+                discCheck.checked = categoryDiscState.get(catName) ?? true;
                 discCheck.dataset.categoryDisc = catName;
                 const discLabel = document.createElement('span');
                 discLabel.textContent = 'Discs';
@@ -2231,7 +2583,7 @@
 
                     const cb = document.createElement('input');
                     cb.type = 'checkbox';
-                    cb.checked = false;
+                    cb.checked = activeLayers.has(layerKey);
                     cb.dataset.layerKey = layerKey;
                     cb.dataset.category = catName;
 
@@ -2262,7 +2614,7 @@
                         featureItem.className = 'feature-item';
                         const featureCheck = document.createElement('input');
                         featureCheck.type = 'checkbox';
-                        featureCheck.checked = false;
+                        featureCheck.checked = featureEnabledState.get(feature.id) ?? false;
                         featureCheck.dataset.featureId = feature.id;
                         featureCheck.dataset.layerKey = layerKey;
                         featureCheck.addEventListener('change', (e) => {
@@ -2304,6 +2656,17 @@
                         const featureLabel = document.createElement('span');
                         featureLabel.textContent = feature.name;
                         featureItem.appendChild(featureLabel);
+
+                        featureItem.addEventListener('click', (e) => {
+                            if (e.target.type === 'checkbox') return;
+                            if (feature.geometry && feature.geometry.type === 'orbit') {
+                                flyToOrbit(feature);
+                                showFeaturePopup(feature);
+                            } else if (typeof feature.lat === 'number' && typeof feature.lon === 'number') {
+                                flyToFeatureLocation(feature.lat, feature.lon);
+                            }
+                        });
+
                         featureList.appendChild(featureItem);
                     }
                     body.appendChild(featureList);
@@ -2471,7 +2834,17 @@
                         entry.satellite.label.visible = false;
                     }
                 }
-                applyDiscVisibility();
+                harmMeshes.forEach(mesh => {
+                const parentActive = featureActiveState.get(mesh.userData.featureId) || false;
+                if (!isDynamicHarmsEnabled || !parentActive) {
+                    mesh.visible = false;
+                    return;
+                }
+                if (mesh.userData.harmType === 'psi') mesh.visible = harmPsiEnabled;
+                else if (mesh.userData.harmType === 'contam') mesh.visible = harmContamEnabled;
+                else if (mesh.userData.harmType === 'emi') mesh.visible = harmEmiEnabled;
+            });
+            applyDiscVisibility();
                 updateGlobalToggle();
                 return;
             }
@@ -2519,6 +2892,16 @@
                     }
                 }
             }
+            harmMeshes.forEach(mesh => {
+                const parentActive = featureActiveState.get(mesh.userData.featureId) || false;
+                if (!isDynamicHarmsEnabled || !parentActive) {
+                    mesh.visible = false;
+                    return;
+                }
+                if (mesh.userData.harmType === 'psi') mesh.visible = harmPsiEnabled;
+                else if (mesh.userData.harmType === 'contam') mesh.visible = harmContamEnabled;
+                else if (mesh.userData.harmType === 'emi') mesh.visible = harmEmiEnabled;
+            });
             applyDiscVisibility();
             updateGlobalToggle();
         }
@@ -2750,6 +3133,18 @@
             setTimeout(() => showMessage('', 'hidden'), 1800);
         });
 
+        function updateSurfaceClickUI() {
+            surfaceClickToggle.classList.toggle('on', isSurfaceClickSelectionActive);
+            surfaceClickLabel.textContent = isSurfaceClickSelectionActive ? 'ON' : 'OFF';
+        }
+        surfaceClickToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isSurfaceClickSelectionActive = !isSurfaceClickSelectionActive;
+            updateSurfaceClickUI();
+            showMessage(isSurfaceClickSelectionActive ? 'Surface Click Selection Enabled' : 'Surface Click Selection Disabled', 'info');
+            setTimeout(() => showMessage('', 'hidden'), 1800);
+        });
+
         function updateInfoDebugUI() {
             infoDebugToggle.classList.toggle('on', isInfoDebugActive);
             infoDebugLabel.textContent = isInfoDebugActive ? 'ON' : 'OFF';
@@ -2841,7 +3236,412 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // --- Feature Popup & Raycast Selection System ---
+        let selectedFeature = null;
+        let isMapFrozen = false;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const popupEl = document.getElementById('feature-popup');
+        const popupCloseBtn = document.getElementById('popup-close-btn');
+        const popupNameEl = document.getElementById('popup-name');
+        const popupCategoryEl = document.getElementById('popup-category');
+        const popupTierEl = document.getElementById('popup-tier');
+        const popupMeaningEl = document.getElementById('popup-meaning');
+        const popupReportBtn = document.getElementById('popup-report-btn');
+
+        function getCategoryLabel(feature) {
+            if (!feature || !feature.tags) return 'General';
+            if (feature.tags.includes('heritage')) return 'Heritage';
+            for (const [key, def] of Object.entries(LAYER_DEFS)) {
+                if (feature.tags.some(t => def.tags.includes(t))) {
+                    return def.label;
+                }
+            }
+            return 'General';
+        }
+
+        function showFeaturePopup(feature) {
+            if (!feature) return;
+            selectedFeature = feature;
+            
+            popupNameEl.textContent = feature.name;
+            popupCategoryEl.textContent = getCategoryLabel(feature);
+            
+            const tierNum = feature.tier || 3;
+            popupTierEl.textContent = `Tier ${tierNum}`;
+            
+            let meaningText = '';
+            if (tierNum === 1) {
+                meaningText = 'Tier 1: high protection, activity requires coordination and can be challenged.';
+            } else if (tierNum === 2) {
+                meaningText = 'Tier 2: coordination required before proceeding.';
+            } else {
+                meaningText = 'Tier 3: activity permitted, subject to the general due regard obligation under Article IX.';
+            }
+            popupMeaningEl.textContent = meaningText;
+            
+            popupEl.classList.add('visible');
+        }
+
+        function hideFeaturePopup() {
+            popupEl.classList.remove('visible');
+            if (!isMapFrozen) {
+                selectedFeature = null;
+            }
+        }
+
+        if (popupCloseBtn) {
+            popupCloseBtn.addEventListener('click', hideFeaturePopup);
+        }
+
+        function handleCanvasClick(event) {
+            if (isMapFrozen) return;
+            if (!isSurfaceClickSelectionActive) return;
+            if (event.target !== renderer.domElement) return;
+            
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+            
+            let foundFeature = null;
+            for (const intersect of intersects) {
+                let obj = intersect.object;
+                if (!obj.visible) continue;
+                while (obj) {
+                    if (obj.userData && obj.userData.featureId) {
+                        const feat = FEATURES.find(f => f.id === obj.userData.featureId);
+                        if (feat && featureActiveState.get(feat.id)) {
+                            foundFeature = feat;
+                            break;
+                        }
+                    }
+                    obj = obj.parent;
+                }
+                if (foundFeature) break;
+            }
+            
+            if (!foundFeature && intersects.length > 0) {
+                const hitPoint = intersects[0].point;
+                const { lat, lon } = positionToLatLon(hitPoint);
+                
+                let minDistance = Infinity;
+                for (const f of FEATURES) {
+                    if (f.geometry && f.geometry.type === 'orbit') continue;
+                    if (!featureActiveState.get(f.id)) continue;
+                    const radius = f.radius_km || DEFAULT_RADIUS_KM;
+                    const dist = distanceBetween(lat, lon, f.lat, f.lon);
+                    if (dist < Math.max(radius, 150) && dist < minDistance) {
+                        minDistance = dist;
+                        foundFeature = f;
+                    }
+                }
+            }
+            
+            if (foundFeature) {
+                showFeaturePopup(foundFeature);
+            } else {
+                hideFeaturePopup();
+            }
+        }
+
+        renderer.domElement.addEventListener('click', handleCanvasClick);
+
+        function unfreezeMap() {
+            isMapFrozen = false;
+            controls.enabled = true;
+        }
+
+        function openReportWindow(overrideFeature = null) {
+            const targetFeature = overrideFeature || selectedFeature || currentTelemetryFeature;
+            
+            isMapFrozen = true;
+            controls.enabled = false;
+            
+            if (targetFeature && featureObjects[targetFeature.id]) {
+                const entry = featureObjects[targetFeature.id];
+                if (entry.label) entry.label.visible = true;
+                if (entry.discObject) entry.discObject.visible = true;
+            }
+            
+            renderer.render(scene, camera);
+            const canvasImg = renderer.domElement.toDataURL('image/png');
+
+            let reportName, categoryName, tierNum, tierText, sourceText, evidenceText, statusText, dateText, eventDateText = null, authText, stateResp, disputeText, legalInstrumentText, summaryText;
+
+            if (targetFeature) {
+                tierNum = targetFeature.tier || 3;
+                tierText = tierNum === 1
+                    ? 'Tier 1: high protection, activity requires coordination and can be challenged.'
+                    : tierNum === 2
+                    ? 'Tier 2: coordination required before proceeding.'
+                    : 'Tier 3: activity permitted, subject to the general due regard obligation under Article IX.';
+
+                categoryName = getCategoryLabel(targetFeature);
+                reportName = targetFeature.name;
+
+                if (targetFeature.state === 'USSR') {
+                    stateResp = 'Russia (successor to USSR under state succession)';
+                } else {
+                    stateResp = targetFeature.state 
+                        ? (STATE_DEFS[targetFeature.state]?.name || targetFeature.state)
+                        : (targetFeature.owner || 'None specified');
+                }
+
+                sourceText = targetFeature.source || 'IAU Gazetteer / Scientific Literature';
+
+                evidenceText = targetFeature.evidence_grade === 'A' 
+                    ? 'Grade A - Direct measurement and observational data'
+                    : targetFeature.evidence_grade === 'B' 
+                    ? 'Grade B - Regulatory designation and technical specification'
+                    : targetFeature.evidence_grade === 'C'
+                    ? 'Grade C - Unverified assertion or preliminary estimate'
+                    : 'Not graded';
+
+                statusText = targetFeature.review_status === 'assessed_protected'
+                    ? 'Assessed Protected'
+                    : targetFeature.review_status === 'assessed_open'
+                    ? 'Assessed Open'
+                    : targetFeature.review_status === 'under_assessment'
+                    ? 'Under Assessment'
+                    : 'Unassessed';
+
+                eventDateText = targetFeature.event_date || null;
+                dateText = targetFeature.date || 'Pending';
+                authText = targetFeature.designation_authority || 'IAU / Regulatory Framework';
+
+                legalInstrumentText = targetFeature.id === 'far_side_radio'
+                    ? 'ITU Radio Regulations Article 22.22 and Outer Space Treaty Article IX'
+                    : (targetFeature.articles && targetFeature.articles.length > 0
+                        ? `Outer Space Treaty Articles ${targetFeature.articles.join(' and ')}`
+                        : 'Outer Space Treaty Article IX general due regard principles');
+
+                disputeText = targetFeature.disputed && targetFeature.dispute_details
+                    ? `Active challenge by ${targetFeature.dispute_details.challenger || 'Challenger'}. Justification: ${targetFeature.dispute_details.justification || 'Pending'}. Deadline: ${targetFeature.dispute_details.response_deadline || 'None'}.`
+                    : 'No active disputes recorded';
+
+                summaryText = `This designation identifies ${targetFeature.name} as a ${categoryName} area under a Tier ${tierNum} framework. Operators planning activities within or adjacent to this zone must evaluate potential interference and observe international coordination guidelines. Authorization and continuing supervision remain the responsibility of the designated state party pursuant to Article VI of the Outer Space Treaty.`;
+            } else {
+                const isOrbitReport = targetFeature && targetFeature.geometry && targetFeature.geometry.type === 'orbit';
+                if (isOrbitReport) {
+                    reportName = `${targetFeature.name} (Orbital Domain)`;
+                } else {
+                    const latStr = currentTelemetryLat >= 0 ? `${currentTelemetryLat.toFixed(2)}° N` : `${(-currentTelemetryLat).toFixed(2)}° S`;
+                    const lonStr = lonToDisplay(currentTelemetryLon);
+                    reportName = `Open Lunar Surface (${latStr}, ${lonStr})`;
+                }
+                categoryName = targetFeature ? getCategoryLabel(targetFeature) : 'Unassessed Area';
+                tierNum = targetFeature ? (targetFeature.tier || 3) : 3;
+                tierText = tierNum === 1
+                    ? 'Tier 1: high protection, activity requires coordination and can be challenged.'
+                    : tierNum === 2
+                    ? 'Tier 2: coordination required before proceeding.'
+                    : 'Tier 3: activity permitted, subject to the general due regard obligation under Article IX.';
+                sourceText = targetFeature ? (targetFeature.source || 'IAU / Mission Catalog') : 'Lunar Telemetry Location Survey';
+                evidenceText = targetFeature ? (targetFeature.evidence_grade === 'A' ? 'Grade A' : 'Grade B') : 'Not graded (Unassessed surface point)';
+                statusText = targetFeature ? (targetFeature.review_status ? targetFeature.review_status.toUpperCase() : 'Assessed') : 'Unassessed';
+                dateText = targetFeature ? (targetFeature.date || 'Pending') : 'N/A';
+                authText = targetFeature ? (targetFeature.designation_authority || 'N/A') : 'N/A';
+                stateResp = targetFeature ? (targetFeature.state || 'None specified') : 'None (Article II OST: Not subject to national appropriation)';
+                disputeText = 'No active disputes recorded';
+                legalInstrumentText = 'Outer Space Treaty Article IX general due regard principles';
+                summaryText = targetFeature 
+                    ? `This orbital feature represents ${targetFeature.name} operating in lunar orbit. Coordinates are omitted for non-surface orbital dynamics.`
+                    : `This location represents unassessed open lunar surface. Operators are advised to perform local site verification and adhere to standard Article IX due regard principles.`;
+            }
+
+            const eventDateLine = eventDateText ? `\nEvent date: ${eventDateText}` : "";
+            const textBlockToCopy = `LUNAR CONSTRAINT MAP REPORT\nTitle: ${reportName} - ${categoryName}\n\nHEADLINE FIELDS\nName: ${reportName}\nCategory: ${categoryName}\nTier: Tier ${tierNum}\nWhat that means: ${tierText}\n\nRECORD SECTIONS\nSource: ${sourceText}\nEvidence: ${evidenceText}\nStatus: ${statusText}\nAssessed on: ${dateText}${eventDateLine}\nDesignated by: ${authText}\nState responsible: ${stateResp}\nDispute status: ${disputeText}\nRelevant legal instrument: ${legalInstrumentText}\n\nPLAIN LANGUAGE SUMMARY\n${summaryText}\n\nFOOTER\nAbsence from this report does not mean an area is free of constraint. This report is a rendering of the current record, not a legal determination.`;
+
+            const reportHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Report - ${reportName}</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 24px; background: #080c18; color: #e2e8f0; line-height: 1.5; }
+.report-container { max-width: 800px; margin: 0 auto; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.report-actions { display: flex; gap: 12px; margin-bottom: 20px; }
+.report-btn { padding: 8px 16px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; }
+.report-btn:hover { background: #1d4ed8; }
+h1 { font-size: 1.5rem; margin-top: 0; color: #93c5fd; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+.map-capture { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px; }
+.headline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #1e293b; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.field-full { grid-column: 1 / -1; }
+.field-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+.field-value { font-size: 0.95rem; color: #f8fafc; }
+.section-title { font-size: 1.1rem; color: #93c5fd; margin-top: 24px; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 6px; }
+.audit-list { display: flex; flex-direction: column; gap: 10px; }
+.audit-item { display: flex; flex-direction: column; padding: 8px 12px; background: #1e293b; border-radius: 6px; }
+.summary-box { background: #1e293b; border-left: 4px solid #2563eb; padding: 14px; border-radius: 0 6px 6px 0; margin-top: 12px; font-size: 0.95rem; }
+.honesty-footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #334155; font-size: 0.8rem; color: #64748b; text-align: center; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="report-container">
+    <div class="report-actions">
+        <button class="report-btn" onclick="window.print()">Print</button>
+        <button class="report-btn" onclick="copyText()">Copy</button>
+    </div>
+    <h1>${reportName} - ${categoryName}</h1>
+    <img class="map-capture" src="${canvasImg}" alt="Map Capture">
+    
+    <div class="headline-grid">
+        <div>
+            <div class="field-label">Name</div>
+            <div class="field-value">${reportName}</div>
+        </div>
+        <div>
+            <div class="field-label">Category</div>
+            <div class="field-value">${categoryName}</div>
+        </div>
+        <div>
+            <div class="field-label">Tier</div>
+            <div class="field-value">Tier ${tierNum}</div>
+        </div>
+        <div class="field-full">
+            <div class="field-label">What that means</div>
+            <div class="field-value">${tierText}</div>
+        </div>
+    </div>
+
+    <div class="section-title">Record Audit Trail</div>
+    <div class="audit-list">
+        <div class="audit-item">
+            <div class="field-label">Source</div>
+            <div class="field-value">${sourceText}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">Evidence</div>
+            <div class="field-value">${evidenceText}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">Status</div>
+            <div class="field-value">${statusText}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">Assessed on</div>
+            <div class="field-value">${dateText}</div>
+        </div>` + (eventDateText ? `
+        <div class="audit-item">
+            <div class="field-label">Event date</div>
+            <div class="field-value">${eventDateText}</div>
+        </div>` : "") + `
+        <div class="audit-item">
+            <div class="field-label">Designated by</div>
+            <div class="field-value">${authText}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">State responsible</div>
+            <div class="field-value">${stateResp}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">Dispute status</div>
+            <div class="field-value">${disputeText}</div>
+        </div>
+        <div class="audit-item">
+            <div class="field-label">Relevant legal instrument</div>
+            <div class="field-value">${legalInstrumentText}</div>
+        </div>
+    </div>
+
+    <div class="section-title">Plain Language Summary</div>
+    <div class="summary-box">
+        ${summaryText}
+    </div>
+
+    <div class="honesty-footer">
+        Absence from this report does not mean an area is free of constraint. This report is a rendering of the current record, not a legal determination.
+    </div>
+</div>
+<script>
+function copyText() {
+    const text = ${JSON.stringify(textBlockToCopy)};
+    navigator.clipboard.writeText(text).then(() => {
+        console.log('Report copied');
+    }).catch(err => {
+        console.error('Failed to copy', err);
+    });
+}
+<\/script>
+</body>
+</html>`;
+
+            const reportWin = window.open('', '_blank', 'width=900,height=900');
+            if (reportWin) {
+                reportWin.document.write(reportHtml);
+                reportWin.document.close();
+                
+                const checkClosed = setInterval(() => {
+                    if (reportWin.closed) {
+                        clearInterval(checkClosed);
+                        unfreezeMap();
+                    }
+                }, 500);
+            }
+        }
+
+        if (popupReportBtn) {
+            popupReportBtn.addEventListener('click', () => openReportWindow(selectedFeature));
+        }
+
+        const telemetryReportBtn = document.getElementById('telemetry-report-btn');
+        if (telemetryReportBtn) {
+            telemetryReportBtn.addEventListener('click', () => openReportWindow(currentTelemetryFeature));
+        }
+
         // --- Initialize ---
+        
+        // Collapsible Governance Header
+        const govHeader = document.getElementById('governance-header');
+        const govBody = document.getElementById('governance-body');
+        const govArrow = document.getElementById('governance-arrow');
+        if (govHeader && govBody && govArrow) {
+            govHeader.addEventListener('click', () => {
+                const isHidden = govBody.style.display === 'none' || govBody.style.display === '';
+                govBody.style.display = isHidden ? 'block' : 'none';
+                govArrow.style.transform = isHidden ? 'rotate(90deg)' : 'none';
+            });
+        }
+
+        // Governance Toggle Event Listeners
+        if (assessmentStatusToggle) {
+            assessmentStatusToggle.addEventListener('change', (e) => {
+                isAssessmentStatusMode = e.target.checked;
+                updateVisibility(activeLayers);
+            });
+        }
+        if (opActivityToggle) {
+            opActivityToggle.addEventListener('change', (e) => {
+                isOpActivityEnabled = e.target.checked;
+                updateVisibility(activeLayers);
+            });
+        }
+        if (dynamicHarmsToggle) {
+            dynamicHarmsToggle.addEventListener('change', (e) => {
+                isDynamicHarmsEnabled = e.target.checked;
+                const ctrls = document.getElementById('dynamic-harms-controls');
+                if (ctrls) ctrls.style.display = isDynamicHarmsEnabled ? 'block' : 'none';
+                updateVisibility(activeLayers);
+            });
+        }
+        const harmPsiCb = document.getElementById('harm-psi');
+        const harmContamCb = document.getElementById('harm-contamination');
+        const harmEmiCb = document.getElementById('harm-emi');
+        if (harmPsiCb) harmPsiCb.addEventListener('change', (e) => { harmPsiEnabled = e.target.checked; updateVisibility(activeLayers); });
+        if (harmContamCb) harmContamCb.addEventListener('change', (e) => { harmContamEnabled = e.target.checked; updateVisibility(activeLayers); });
+        if (harmEmiCb) harmEmiCb.addEventListener('change', (e) => { harmEmiEnabled = e.target.checked; updateVisibility(activeLayers); });
+
+        if (disputesToggle) {
+            disputesToggle.addEventListener('change', (e) => {
+                isDisputesEnabled = e.target.checked;
+                updateVisibility(activeLayers);
+            });
+        }
+
         loadUserSites();
         buildLayers();
 
@@ -2849,9 +3649,77 @@
         let highlightedFeatureIds = new Set();
         let lastTelemetryTime = 0;
 
+        // --- Smooth Camera Navigation ---
+        let cameraAnimation = null;
+
+        function flyToFeatureLocation(lat, lon, targetDistance = null) {
+            const currentDist = camera.position.distanceTo(controls.target);
+            const targetDist = targetDistance || currentDist;
+            const targetNormal = latLonToPosition(lat, lon, 1.0).normalize();
+            const startVec = camera.position.clone().normalize();
+            const startQuaternion = camera.quaternion.clone();
+
+            const targetPos = targetNormal.clone().multiplyScalar(targetDist);
+            const dummyCamera = camera.clone();
+            dummyCamera.position.copy(targetPos);
+            dummyCamera.lookAt(controls.target);
+            const endQuaternion = dummyCamera.quaternion.clone();
+
+            const angleRad = startVec.angleTo(targetNormal);
+            // 180 degrees (Math.PI) takes ~3.0s
+            const duration = Math.max(0.8, (angleRad / Math.PI) * 3.0);
+
+            cameraAnimation = {
+                startTime: clock.getElapsedTime(),
+                duration: duration,
+                startQuaternion: startQuaternion,
+                endQuaternion: endQuaternion,
+                startDist: currentDist,
+                targetDist: targetDist
+            };
+        }
+
+        function flyToOrbit(feature) {
+            // Highlight the orbit feature
+            if (featureObjects[feature.id]) {
+                const entry = featureObjects[feature.id];
+                if (entry.discObject) entry.discObject.visible = true;
+                if (entry.satellite) {
+                    entry.satellite.group.visible = true;
+                    entry.satellite.label.visible = true;
+                }
+            }
+            // Zoom out to distance 6.5 to frame full orbital path
+            const currentLatLon = positionToLatLon(camera.position);
+            flyToFeatureLocation(currentLatLon.lat, currentLatLon.lon, 6.5);
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
+
+            if (cameraAnimation) {
+                const elapsed = clock.getElapsedTime() - cameraAnimation.startTime;
+                let progress = Math.min(1.0, elapsed / cameraAnimation.duration);
+                // Smooth acceleration and deceleration (ease-in-out curve)
+                const easeProgress = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                const q = new THREE.Quaternion();
+                q.slerpQuaternions(cameraAnimation.startQuaternion, cameraAnimation.endQuaternion, easeProgress);
+                camera.quaternion.copy(q);
+
+                // Recompute position relative to origin based on orientation
+                const currentAnimatedDist = THREE.MathUtils.lerp(cameraAnimation.startDist, cameraAnimation.targetDist, easeProgress);
+                const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
+                camera.position.copy(forward.multiplyScalar(currentAnimatedDist));
+
+                if (progress >= 1.0) {
+                    cameraAnimation = null;
+                }
+            }
+
             controls.update();
 
             const cameraWorldPos = camera.position;
@@ -2877,7 +3745,20 @@
 
             const activeTags = getActiveTags();
             const overlappingFeatures = [];
-            for (const feature of FEATURES) {
+            
+            // Filter out operational activities if opActivityToggle is unchecked
+            const activeFeaturesList = FEATURES.filter(f => {
+                if (f.tags && f.tags.includes('operational_activity')) {
+                    return isOpActivityEnabled;
+                }
+                return true;
+            });
+
+            // Store operational footprints for overlap detection
+            const opFootprints = [];
+
+            for (const feature of activeFeaturesList) {
+
                 if (feature.tags && feature.tags.includes('natural')) continue;
                 if (feature.geometry && feature.geometry.type === 'orbit') continue;
                 if (!feature.tags || !feature.tags.some(t => activeTags.has(t))) continue;
@@ -3069,8 +3950,15 @@
 
         layersPanel.classList.remove('closed');
         layersToggle.classList.remove('visible');
-        showMessage('📐 Click "Plan" to plan a site at your current camera location', 'info');
+        showMessage(' Click "Plan" to plan a site at your current camera location', 'info');
         setTimeout(() => showMessage('', 'hidden'), 5000);
+        window.FEATURES = FEATURES;
+        window.showFeaturePopup = showFeaturePopup;
+        window.hideFeaturePopup = hideFeaturePopup;
+        window.openReportWindow = openReportWindow;
+        window.unfreezeMap = unfreezeMap;
+        Object.defineProperty(window, 'isMapFrozen', { get: () => isMapFrozen });
+
         console.log('Lunar Constraint Map with Camera-Based Planning and Curved Discs initialized.');
     </script>
 </body>
