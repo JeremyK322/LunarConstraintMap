@@ -20,12 +20,6 @@ The Moon is not crowded yet, but it will be. The most contested assets are not o
 
 The Lunar Constraint Map (LCM) makes the spatial dimension of existing legal obligations visible. It serves as a shared reference frame for international coordination, operationalizing what already exists in the Outer Space Treaty framework.
 
-### What it is not
-
-It is not a court, a regulator, a treaty, a registry of claims, or a decision engine. It does not adjudicate, license, prohibit, or tell you where to land. It is a shared reference frame.
-
-The map is not neutral. It makes choices about what to render visible. Its defense is process neutrality: everything is sourced, contested, and visible.
-
 ---
 
 ## Features
@@ -73,13 +67,12 @@ Fill in the details: Name, Actor, State Party, Radius, Color, Tier, Description.
 
 | Panel | Content |
 |-------|---------|
-| **Bottom-Left Telemetry HUD** | Feature name, category, tier or status, and state responsible at the screen center. Overlapping features at the center point are listed with an Article IX coordination note. |
-| **Bottom-Right Info Debug** | Camera distance from Moon center; Viewpoint coordinates; Dynamic rotation sensitivity; Auto-rotation state |
+| **Bottom-Right Telemetry HUD** | Feature name, category, tier or status, and state responsible at the screen center. Overlapping features at the center point are listed with an Article IX coordination note. |
 | **State Legend** | Article VI State Parties color-coded by responsibility |
 
 ### Feature Reports
 
-Click any point on the Moon. The popup shows four things: the feature name, its category, its tier, and what that tier means.
+The popup shows four things: the feature name, its category, its tier, and what that tier means.
 
 The Report button freezes the map and opens the full record, including:
 - Source and evidence grade (A/B/C)
@@ -164,45 +157,6 @@ Supports Article VI responsibility mapping:
 | ESA (Member States) | #00b4d8 |
 | Israel | #48cae4 |
 | Pakistan (SUPARCO) | #2a9d8f |
-
----
-
-## Getting Started
-
-### Prerequisites
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- Basic HTTP server (for local development)
-
-### Running Locally
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/jeremyk322/LunarConstraintMap.git
-   cd LunarConstraintMap
-   ```
-
-2. Start a local server:
-   ```bash
-   # Using Python 3
-   python -m http.server 8000
-
-   # Using Node.js
-   npx serve
-
-   # Using VS Code Live Server
-   # Right-click index.html → Open with Live Server
-   ```
-
-3. Open in browser:
-   ```
-   http://localhost:8000
-   ```
-
-### Loading Custom Lunar Mesh
-- Click the Settings gear icon
-- Select Load GLB
-- Choose a .glb or .gltf 3D lunar model
-- The map will update with your custom mesh
 
 ---
 
