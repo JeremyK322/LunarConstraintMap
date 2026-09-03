@@ -16,7 +16,7 @@ The map is an interactive 3D web application that visualizes spatial constraints
 
 ## Overview
 
-The Moon is not crowded yet, but it will be. The most contested assets are not only water ice and metals. They are landing sites, stable orbits, radio-quiet zones, sites of scientific interest, heritage, view, spectrum. These are resources in every meaningful sense, and they are already scarce.
+The most contested assets are not only water ice and metals. They are landing sites, stable orbits, radio-quiet zones, sites of scientific interest, heritage, view, spectrum. These are resources in every meaningful sense, and they are already scarce.
 
 The Lunar Constraint Map (LCM) makes the spatial dimension of existing legal obligations visible. It serves as a shared reference frame for international coordination, operationalizing what already exists in the Outer Space Treaty framework.
 
