@@ -959,15 +959,15 @@
                 </div>
                 <div class="form-group">
                     <label>Site Name *</label>
-                    <input type="text" id="planning-name" placeholder="e.g., Moonlight Station, South Pole Base" />
+                    <input type="text" id="planning-name" placeholder="e.g., ESA Moonlight Station / ISRO South Pole Base" />
                 </div>
                 <div class="form-group">
                     <label>Actor / Operator *</label>
-                    <input type="text" id="planning-actor" placeholder="e.g., NASA, SpaceX, ESA" />
+                    <input type="text" id="planning-actor" placeholder="e.g., ESA, ISRO, JAXA" />
                 </div>
                 <div class="form-group">
                     <label>State Party (Art. VI Responsibility)</label>
-                    <input type="text" id="planning-state" placeholder="e.g., China, Russia, USA or leave blank" />
+                    <input type="text" id="planning-state" placeholder="e.g., China, Russia, USA, or leave blank" />
                     <div class="hint">Required for OST Art. VI authorization and supervision.</div>
                 </div>
                 <div class="form-row">
@@ -2264,6 +2264,7 @@
                         color = '#94a3b8'; // Muted slate outline
                         opacity = 0.05; // Thin outline, virtually no fill
                         break;
+                    case 'proposed_protected':
                     case 'assessed_protected':
                         color = '#64748b'; // Muted slate fill
                         opacity = 0.4;
@@ -2498,7 +2499,7 @@
                     feature
                 };
                 if (!featureActiveState.has(feature.id)) featureActiveState.set(feature.id, false);
-                if (!featureEnabledState.has(feature.id)) featureEnabledState.set(feature.id, false);
+                if (!featureEnabledState.has(feature.id)) featureEnabledState.set(feature.id, true);
 
                 if (currentMoon) {
                     if (discObject) currentMoon.add(discObject);
@@ -2640,12 +2641,17 @@
                         featureItem.className = 'feature-item';
                         const featureCheck = document.createElement('input');
                         featureCheck.type = 'checkbox';
-                        featureCheck.checked = featureEnabledState.get(feature.id) ?? false;
+                        featureCheck.checked = featureEnabledState.get(feature.id) ?? true;
                         featureCheck.dataset.featureId = feature.id;
                         featureCheck.dataset.layerKey = layerKey;
                         featureCheck.addEventListener('change', (e) => {
                             const isChecked = e.target.checked;
                             featureEnabledState.set(feature.id, isChecked);
+
+                            // Sync all checkboxes for this feature across other layer lists
+                            document.querySelectorAll(`.feature-item input[data-feature-id="${feature.id}"]`).forEach(input => {
+                                input.checked = isChecked;
+                            });
 
                             const allLayerFeatChecks = featureList.querySelectorAll('input[type="checkbox"]');
                             const anyChecked = Array.from(allLayerFeatChecks).some(fcb => fcb.checked);
@@ -2706,7 +2712,9 @@
                         featChecks.forEach(fcb => {
                             fcb.checked = isChecked;
                             const fid = fcb.dataset.featureId;
-                            if (fid) featureEnabledState.set(fid, isChecked);
+                            if (fid && isChecked) {
+                                featureEnabledState.set(fid, true);
+                            }
                         });
 
                         updateVisibility(activeLayers);
@@ -2735,7 +2743,9 @@
                     featCheckboxes.forEach(fcb => {
                         fcb.checked = checked;
                         const fid = fcb.dataset.featureId;
-                        if (fid) featureEnabledState.set(fid, checked);
+                        if (fid && checked) {
+                            featureEnabledState.set(fid, true);
+                        }
                     });
                     updateVisibility(activeLayers);
                     updateGlobalToggle();
@@ -2773,7 +2783,9 @@
                 allFeatChecks.forEach(fcb => {
                     fcb.checked = checked;
                     const fid = fcb.dataset.featureId;
-                    if (fid) featureEnabledState.set(fid, checked);
+                    if (fid && checked) {
+                        featureEnabledState.set(fid, true);
+                    }
                 });
                 updateVisibility(activeLayers);
                 highlightActiveLayerItems();
@@ -3447,7 +3459,9 @@
                     ? 'Grade C - Unverified assertion or preliminary estimate'
                     : 'Not graded';
 
-                statusText = targetFeature.review_status === 'assessed_protected'
+                statusText = targetFeature.review_status === 'proposed_protected'
+                    ? 'Proposed Protected'
+                    : targetFeature.review_status === 'assessed_protected'
                     ? 'Assessed Protected'
                     : targetFeature.review_status === 'assessed_open'
                     ? 'Assessed Open'
@@ -3457,7 +3471,7 @@
 
                 eventDateText = targetFeature.event_date || null;
                 dateText = targetFeature.date || 'Pending';
-                authText = targetFeature.designation_authority || 'IAU / Regulatory Framework';
+                authText = targetFeature.designation_authority || 'Proposed by map contributors';
 
                 legalBasisText = targetFeature.legal_basis || 'None specified';
                 legalStatusEffectText = targetFeature.legal_status_effect || 'none';
