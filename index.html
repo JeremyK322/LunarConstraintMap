@@ -312,11 +312,11 @@
             font-size: 1rem; font-weight: bold;
             background: rgba(10,10,30,0.8); backdrop-filter: blur(4px);
             padding: 8px 14px; border-radius: 12px; cursor: pointer;
-            border: 2px solid #445566; transition: background 0.2s, transform 0.2s, opacity 0.3s;
-            user-select: none; display: none; opacity: 0; color: #fff;
+            border: 2px solid #445566; transition: background 0.2s, transform 0.2s, opacity 0.3s, visibility 0.3s;
+            user-select: none; visibility: hidden; opacity: 0; color: #fff;
         }
         #layers-toggle:hover { background: rgba(40,40,80,0.9); border-color: #6688aa; transform: scale(1.05); }
-        #layers-toggle.visible { display: block; opacity: 1; }
+        #layers-toggle.visible { visibility: visible; opacity: 1; }
         #settings-panel {
             position: absolute; top: 65px; right: 20px;
             background: rgba(10,10,30,0.92); backdrop-filter: blur(8px);
@@ -809,7 +809,7 @@
         }
 
         @media (max-width: 500px) {
-            #message { top: 12px; font-size: 0.75rem; padding: 4px 12px; }
+            #message { top: 12px; font-size: 0.75rem; padding: 4px 12px; white-space: normal; max-width: calc(100vw - 24px); }
             #layers-panel { top: 10px; left: 10px; padding: 10px 12px; min-width: 180px; max-width: 280px; font-size: 0.8rem; }
             #layers-panel .title { font-size: 0.9rem; }
             #gear { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 10px; }
@@ -817,7 +817,7 @@
             #help-btn { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 155px; }
             #settings-panel { right: 10px; top: 50px; min-width: 160px; padding: 12px 14px; }
             #centre-overlap-display { font-size: 0.75rem; padding: 6px 10px; bottom: 16px; right: 16px; min-width: 100px; max-width: 200px; }
-            #centre-overlap-display .label { min-width: 32px; }
+            #centre-overlap-display .hud-label { min-width: 32px; }
             #layers-toggle { top: 10px; left: 10px; font-size: 0.85rem; padding: 6px 10px; }
             .planning-body .form-row { flex-direction: column; gap: 0; }
             #crosshair .outer { width: 20px; height: 20px; }
@@ -845,11 +845,11 @@
                 <input type="checkbox" id="global-toggle" title="Toggle all layers" />
                 Moon Layers
             </span>
-            <button class="close-btn" id="layers-close" title="Close layers panel">X</button>
+            <button class="close-btn" id="layers-close" title="Close layers panel">&times;</button>
         </div>
         <!-- Master Governance Toggles -->
         <div id="governance-toggles" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #334455;">
-            <div id="governance-header" style="display:flex; align-items:center; justify-space-between; cursor:pointer; font-size: 0.75rem; font-weight: bold; color: #88aacc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+            <div id="governance-header" style="display:flex; align-items:center; justify-content: space-between; cursor:pointer; font-size: 0.75rem; font-weight: bold; color: #88aacc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
                 <span>GOVERNANCE OVERLAYS</span>
                 <span id="governance-arrow" style="transition: transform 0.2s;">&gt;</span>
             </div>
@@ -890,7 +890,7 @@
     <div id="layers-toggle" title="Show layers">Layers</div>
 
     <!-- Feature Popup -->
-    <div id="feature-popup" class="hidden">
+    <div id="feature-popup">
         <button class="popup-close-btn" id="popup-close-btn">&times;</button>
         <div class="popup-field">
             <span class="popup-field-label">Name</span>
@@ -949,49 +949,49 @@
         <div id="planning-modal">
             <div class="planning-header">
                 <span class="title"> New Planned Site</span>
-                <button class="close-btn" id="planning-close-btn" title="Close">X</button>
+                <button class="close-btn" id="planning-close-btn" title="Close">&times;</button>
             </div>
             <div class="planning-body">
                 <div class="form-group">
-                    <label> Current Camera Location</label>
+                    <label for="current-location-display"> Current Camera Location</label>
                     <div class="current-loc" id="current-location-display">Loading...</div>
                     <div class="hint">Site will be placed at the center of your view</div>
                 </div>
                 <div class="form-group">
-                    <label>Site Name *</label>
+                    <label for="planning-name">Site Name *</label>
                     <input type="text" id="planning-name" placeholder="e.g., ESA Moonlight Station / ISRO South Pole Base" />
                 </div>
                 <div class="form-group">
-                    <label>Actor / Operator *</label>
+                    <label for="planning-actor">Actor / Operator *</label>
                     <input type="text" id="planning-actor" placeholder="e.g., ESA, ISRO, JAXA" />
                 </div>
                 <div class="form-group">
-                    <label>State Party (Art. VI Responsibility)</label>
-                    <input type="text" id="planning-state" placeholder="e.g., China, Russia, USA, or leave blank" />
+                    <label for="planning-state">State Party (Art. VI Responsibility)</label>
+                    <input type="text" id="planning-state" placeholder="e.g., USA, China, Russia, or leave blank" />
                     <div class="hint">Required for OST Art. VI authorization and supervision.</div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Latitude (°)</label>
+                        <label for="planning-lat">Latitude (°)</label>
                         <input type="number" id="planning-lat" step="0.001" disabled />
                     </div>
                     <div class="form-group">
-                        <label>Longitude (°)</label>
+                        <label for="planning-lon">Longitude (°)</label>
                         <input type="number" id="planning-lon" step="0.001" disabled />
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Radius (km) *</label>
+                        <label for="planning-radius">Radius (km) *</label>
                         <input type="number" id="planning-radius" step="0.1" min="0.1" value="5" />
                     </div>
                     <div class="form-group">
-                        <label>Color</label>
+                        <label for="planning-color">Color</label>
                         <input type="color" id="planning-color" value="#00ff88" style="height:42px;padding:2px;cursor:pointer;" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Constraint Tier *</label>
+                    <label for="planning-tier">Constraint Tier *</label>
                     <select id="planning-tier">
                         <option value="3">Tier 3 - General Activity (e.g., temporary camp, research)</option>
                         <option value="2" selected>Tier 2 - Significant Interest (e.g., base, extraction)</option>
@@ -1007,11 +1007,11 @@
                     <div class="hint">Renders a 3D translucent half-sphere dome extending into space matching the site radius.</div>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
+                    <label for="planning-description">Description</label>
                     <textarea id="planning-description" placeholder="Brief description of planned activity..."></textarea>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Notes (optional)</label>
+                    <label for="planning-notes">Notes (optional)</label>
                     <textarea id="planning-notes" placeholder="Additional notes, mission details, etc."></textarea>
                 </div>
             </div>
@@ -1027,7 +1027,7 @@
         <div id="conflict-modal">
             <div class="conflict-header">
                 <span class="title"> Conflict Assessment Report</span>
-                <button class="close-btn" id="conflict-close-btn" title="Close">X</button>
+                <button class="close-btn" id="conflict-close-btn" title="Close">&times;</button>
             </div>
             <div class="conflict-body" id="conflict-body-content">
                 <!-- Dynamically populated -->
@@ -1049,7 +1049,7 @@
         <div id="help-modal">
             <div class="help-header">
                 <span class="title">Lunar Constraint Map Guide</span>
-                <button class="close-btn" id="help-close-btn" title="Close">X</button>
+                <button class="close-btn" id="help-close-btn" title="Close">&times;</button>
             </div>
             <div class="help-tabs">
                 <button class="help-tab-btn active" data-tab="about">About LCM & OST</button>
@@ -1094,10 +1094,10 @@
                     <ul>
                         <li><strong>Master Governance Overlays:</strong>
                             <ul>
-                                <li><strong> Assessment Status & Provisional Mode:</strong> Renders map confidence into 4 states (Unassessed, Under Assessment, Assessed Open, Assessed Protected) with dates. Sites under active review carry provisional protection notices requiring public justification before proceeding.</li>
-                                <li><strong> Operational Activity Layer:</strong> Displays planned and active lunar surface missions, footprints, and triggers dynamic Article IX spatial overlap alerts when operational radii cross.</li>
-                                <li><strong> Dynamic Harms Layer (Computed):</strong> Computes procedural environmental footprints for Plume Surface Interaction (PSI-v1.2), Volatile Contamination (CONTAM-v1.0), and Transient EMI (EMI-v1.1) attached to operating assets.</li>
-                                <li><strong> Disputes, Salience & Recency:</strong> Highlights challenged designations with hatched textures, shows dispute register entries with deadlines, adjusts visual weight by evidence grade (A vs C), and flags status updates within 2 years.</li>
+                                <li><strong> Assessment Status &amp; Provisional Protection:</strong> Evaluates metadata about the map's own confidence into four distinct states (Unassessed, Under Assessment, Assessed Open, Proposed Protected) alongside assessment dates. Sites under active review render provisional constraints visually distinct from standing designations, notifying operators that proceeding during an assessment window requires public justification while leaving choices open and visible.</li>
+                                <li><strong> Operational Activity Layer:</strong> Converts the map into an active coordination tool by rendering where human assets are located, where operations are planned, and where trajectories cross. Computes spatial operational footprints for active/planned surface missions and triggers dynamic Outer Space Treaty (OST) Article IX spatial overlap alerts in the telemetry HUD and site planning conflict assessment modal when operational radii intersect.</li>
+                                <li><strong> Dynamic Harms Layer (Computed):</strong> Computes dynamic environmental impact models attached to operating surface assets, replacing static catalogues with procedural footprints for Plume Surface Interaction (PSI-v1.2), Volatile Contamination Deposition (CONTAM-v1.0), and Transient Electromagnetic Interference (EMI-v1.1), each stamped with model versioning and execution dates.</li>
+                                <li><strong> Disputes, Salience &amp; Recency:</strong> Ensures the map remains politically defensible and readable as it ages. Designations under active challenge link to dispute register entries showing challenger justifications and response deadlines. Visual weight dynamically scales by evidence grade (boosting established Grade A designations while dimming Grade C single-source estimates), and status changes within the last two years carry explicit recency markers to prevent ambient noise from drowning out key signals.</li>
                             </ul>
                         </li>
                         <li><strong>Orbit Feature Navigation:</strong> Click any orbit feature (e.g. Gateway / NRHO Orbit) in the layer menu to frame the full orbital trajectory at distance 6.500, highlight orbital satellites, and generate reports without requiring surface Lat/Lon.</li>
@@ -1308,6 +1308,10 @@
                 if (data) {
                     userSites = JSON.parse(data);
                     userSites = userSites.filter(s => s.id && s.name && s.lat !== undefined && s.lon !== undefined);
+                    // Migrate legacy saved sites: default show_dispersion to true if the field was never stored.
+                    userSites.forEach(s => {
+                        if (s.show_dispersion === undefined) s.show_dispersion = true;
+                    });
                 }
             } catch (e) {
                 userSites = [];
@@ -1500,7 +1504,7 @@
         const MOON_RADIUS_KM = 1737.4;
         const MOON_3D_RADIUS = 1;
         const DEFAULT_RADIUS_KM = 10;
-        const MIN_VISUAL_RADIUS_KM = 50;
+        const MIN_VISUAL_RADIUS_KM = 100;
         const MIN_DETECTION_KM = 150;
 
         // --- Planning System ---
@@ -1878,7 +1882,7 @@
             domeMesh.visible = !!site.show_dispersion;
 
             // Label
-            const labelTex = createLabelTexture(site.name + (site.tier ? ` [T${site.tier}]` : ''), 24, '(PLANNED)');
+            const labelTex = createLabelTexture(site.name + (site.tier ? ` [T${site.tier}]` : ''), 24, null);
             const labelMat = new THREE.SpriteMaterial({
                 map: labelTex,
                 transparent: true,
@@ -2130,7 +2134,7 @@
             }
             const categoryLabel = primaryLayerKey && LAYER_DEFS[primaryLayerKey] ? LAYER_DEFS[primaryLayerKey].label : (isUserSite ? 'Planning' : 'General');
 
-            const statusText = feature.review_status ? feature.review_status.replace('_', ' ').toUpperCase() : `Tier ${feature.tier || 3}`;
+            const statusText = feature.review_status ? feature.review_status.replaceAll('_', ' ').toUpperCase() : `Tier ${feature.tier || 3}`;
             const stateText = feature.state && feature.state.trim() ? feature.state : 'None';
 
             let ostText = 'Art. IX (Due regard)';
@@ -2242,6 +2246,29 @@
         }
 
         
+        function createDashedRingTexture(colorHex) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = colorHex + '11'; // Low opacity fill
+            ctx.beginPath();
+            ctx.arc(64, 64, 58, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = colorHex;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([8, 6]);
+            ctx.beginPath();
+            ctx.arc(64, 64, 58, 0, Math.PI * 2);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
         function getFeatureVisualProps(feature) {
             let color = '#888899';
             let opacity = 0.4;
@@ -2254,15 +2281,17 @@
                         color = '#888899';
                         opacity = 0.2;
                         isDashed = true;
+                        useTexture = 'dashed';
                         break;
                     case 'under_assessment':
                         color = '#ffaa00'; // Amber provisional protection
                         opacity = 0.5;
                         useTexture = 'provisional';
                         break;
+                    case 'open':
                     case 'assessed_open':
                         color = '#94a3b8'; // Muted slate outline
-                        opacity = 0.05; // Thin outline, virtually no fill
+                        opacity = 0.08; // Thin outline
                         break;
                     case 'proposed_protected':
                     case 'assessed_protected':
@@ -2310,6 +2339,10 @@
                 }
             }
             for (const key in featureObjects) delete featureObjects[key];
+            harmMeshes.forEach(mesh => {
+                if (currentMoon) currentMoon.remove(mesh);
+            });
+            harmMeshes.length = 0;
             allGlowMeshes.length = 0;
             allLabels.length = 0;
             satelliteList.length = 0;
@@ -2333,14 +2366,16 @@
                 let satelliteObj = null;
                 const geom = feature.geometry;
                 const type = geom ? geom.type : 'point';
-                const color = '#ff5555';
+                const geomColor = (geom && geom.color) ? geom.color : (feature.tags && feature.tags.includes('radio_quiet') ? LAYER_DEFS['radio_quiet'].color : '#ff5555');
 
                 if (type === 'point') {
                     const featureRadiusKm = feature.radius_km || DEFAULT_RADIUS_KM;
+                    const visualRadiusKm = Math.max(featureRadiusKm, MIN_VISUAL_RADIUS_KM);
                     const pos = latLonToPosition(feature.lat, feature.lon, MOON_3D_RADIUS);
                     const targetNormal = pos.clone().normalize();
 
-                    const discGeo = createCurvedDiscGeometry(featureRadiusKm, 1.002);
+                    const discGeo = createCurvedDiscGeometry(visualRadiusKm, 1.002);
+                    const basePositions = discGeo.attributes.position.clone();
                     const visualProps = getFeatureVisualProps(feature);
                     const discMatProps = {
                         color: new THREE.Color(visualProps.color),
@@ -2352,10 +2387,12 @@
                     };
                     if (visualProps.useTexture === 'provisional') {
                         discMatProps.map = createPulsatingRingTexture(visualProps.color);
+                    } else if (visualProps.useTexture === 'dashed') {
+                        discMatProps.map = createDashedRingTexture(visualProps.color);
                     }
                     const discMat = new THREE.MeshBasicMaterial(discMatProps);
                     discObject = new THREE.Mesh(discGeo, discMat);
-                    discObject.userData = { featureId: feature.id };
+                    discObject.userData = { featureId: feature.id, baseOpacity: visualProps.opacity };
                     discObject.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetNormal);
                     allGlowMeshes.push(discObject);
                     // Create dynamic harms meshes if operational activity
@@ -2398,7 +2435,7 @@
                     const labelTex = createLabelTexture(feature.name, 30);
                     const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true, depthTest: false, depthWrite: false, opacity: 0, sizeAttenuation: true });
                     labelSprite = new THREE.Sprite(labelMat);
-                    const labelHeight = 1.005 + (Math.max(featureRadiusKm, MIN_VISUAL_RADIUS_KM) / MOON_RADIUS_KM) * 0.2;
+                    const labelHeight = 1.005 + (visualRadiusKm / MOON_RADIUS_KM) * 0.15;
                     const labelPos = targetNormal.clone().multiplyScalar(labelHeight);
                     labelSprite.position.copy(labelPos);
                     labelSprite.scale.set(0.4, 0.1, 1);
@@ -2411,7 +2448,7 @@
                     const angularRadiusRad = ((geom.angular_radius_deg || (type === 'hemisphere' ? 90 : 75)) * Math.PI) / 180;
                     const opacity = geom.opacity || 0.14;
                     const geo = new THREE.SphereGeometry(radius3D, segs, segs/2, 0, Math.PI*2, 0, angularRadiusRad);
-                    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: opacity, side: THREE.DoubleSide, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending });
+                    const mat = new THREE.MeshBasicMaterial({ color: geomColor, transparent: true, opacity: opacity, side: THREE.DoubleSide, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending });
                     const mesh = new THREE.Mesh(geo, mat);
                     const hLat = geom.lat ?? 0;
                     const hLon = geom.lon ?? 180;
@@ -2441,9 +2478,9 @@
                     const isDashed = geom.dash || false;
                     let mat;
                     if (isDashed) {
-                        mat = new THREE.LineDashedMaterial({ color, dashSize: 0.02, gapSize: 0.015, transparent: true, opacity: 0.7, depthWrite: false });
+                        mat = new THREE.LineDashedMaterial({ color: geomColor, dashSize: 0.02, gapSize: 0.015, transparent: true, opacity: 0.7, depthWrite: false });
                     } else {
-                        mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false });
+                        mat = new THREE.LineBasicMaterial({ color: geomColor, transparent: true, opacity: 0.5, depthWrite: false });
                     }
                     const line = new THREE.Line(orbitGeo, mat);
                     line.userData = { featureId: feature.id };
@@ -2463,7 +2500,7 @@
 
                 let opFootprintMesh = null;
                 if (feature.tags && feature.tags.includes('operational_activity') && (feature.mission_status === 'planned' || feature.mission_status === 'active')) {
-                    const opRadKm = feature.operational_radius_km || (feature.radius_km * 1.5);
+                    const opRadKm = Math.max(feature.operational_radius_km || (feature.radius_km * 1.5), MIN_VISUAL_RADIUS_KM);
                     const opGeo = createCurvedDiscGeometry(opRadKm, 1.003);
                     const opMat = new THREE.MeshBasicMaterial({
                         color: new THREE.Color('#00ffcc'),
@@ -2496,7 +2533,9 @@
                     satellite: satelliteObj || null,
                     type,
                     tags: feature.tags || [],
-                    feature
+                    feature,
+                    basePositions: discObject && discObject.geometry ? discObject.geometry.attributes.position.clone() : null,
+                    lastFactor: 1.0
                 };
                 if (!featureActiveState.has(feature.id)) featureActiveState.set(feature.id, false);
                 if (!featureEnabledState.has(feature.id)) featureEnabledState.set(feature.id, true);
@@ -2794,12 +2833,16 @@
             highlightActiveLayerItems();
         }
 
-        function getFeatureColor(feature, primaryLayerKey) {
+        function getFeatureColor(feature, primaryKey) {
+            if (isAssessmentStatusMode) {
+                const visualProps = getFeatureVisualProps(feature);
+                return visualProps.color;
+            }
             if (isStateModeActive && feature.state && STATE_DEFS[feature.state]) {
                 return STATE_DEFS[feature.state].color;
             }
-            if (primaryLayerKey && LAYER_DEFS[primaryLayerKey]) {
-                return LAYER_DEFS[primaryLayerKey].color;
+            if (primaryKey && LAYER_DEFS[primaryKey]) {
+                return LAYER_DEFS[primaryKey].color;
             }
             return '#ff5555';
         }
@@ -2815,19 +2858,22 @@
 
                 const feature = FEATURES.find(f => f.id === fid);
                 if (!feature) continue;
-                let belongsToCategory = null;
+
+                let categoryDiscsOn = false;
                 for (const [catName, layerKeys] of Object.entries(CATEGORIES)) {
-                    for (const key of layerKeys) {
+                    const matchesCat = layerKeys.some(key => {
                         const def = LAYER_DEFS[key];
-                        if (def && feature.tags && feature.tags.some(t => def.tags.includes(t))) {
-                            belongsToCategory = catName;
+                        return def && feature.tags && feature.tags.some(t => def.tags.includes(t));
+                    });
+                    if (matchesCat) {
+                        const isCatDiscOn = !categoryDiscState.has(catName) || categoryDiscState.get(catName);
+                        if (isCatDiscOn) {
+                            categoryDiscsOn = true;
                             break;
                         }
                     }
-                    if (belongsToCategory) break;
                 }
 
-                const categoryDiscsOn = !categoryDiscState.has(belongsToCategory) || categoryDiscState.get(belongsToCategory);
                 entry.discObject.visible = isActive && categoryDiscsOn;
             }
         }
@@ -2919,7 +2965,30 @@
                     }
 
                     const color = getFeatureColor(feature, primaryKey);
-                    if (entry.discObject && entry.discObject.material) entry.discObject.material.color.set(color);
+                    if (entry.discObject && entry.discObject.material) {
+                        entry.discObject.material.color.set(color);
+
+                        let baseOp = 0.5;
+                        let tex = null;
+
+                        if (isAssessmentStatusMode) {
+                            if (feature.review_status === 'under_assessment') {
+                                baseOp = 0.6;
+                                tex = createPulsatingRingTexture(color);
+                            } else if (feature.review_status === 'unassessed') {
+                                baseOp = 0.35;
+                                tex = createDashedRingTexture(color);
+                            } else if (feature.review_status === 'open' || feature.review_status === 'assessed_open') {
+                                baseOp = 0.3;
+                            } else {
+                                baseOp = 0.5;
+                            }
+                        }
+
+                        entry.discObject.userData.baseOpacity = baseOp;
+                        entry.discObject.material.map = tex;
+                        entry.discObject.material.needsUpdate = true;
+                    }
                 } else {
                     featureActiveState.set(fid, false);
                     if (entry.discObject) entry.discObject.visible = false;
@@ -2931,16 +3000,16 @@
                 }
             }
             harmMeshes.forEach(mesh => {
-                const parentActive = featureActiveState.get(mesh.userData.featureId) || false;
-                if (!isDynamicHarmsEnabled || !parentActive) {
-                    mesh.visible = false;
-                    return;
-                }
-                if (mesh.userData.harmType === 'psi') mesh.visible = harmPsiEnabled;
-                else if (mesh.userData.harmType === 'contam') mesh.visible = harmContamEnabled;
-                else if (mesh.userData.harmType === 'emi') mesh.visible = harmEmiEnabled;
-            });
-            applyDiscVisibility();
+                    const parentActive = featureActiveState.get(mesh.userData.featureId) || false;
+                    if (!isDynamicHarmsEnabled || !parentActive) {
+                        mesh.visible = false;
+                        return;
+                    }
+                    if (mesh.userData.harmType === 'psi') mesh.visible = harmPsiEnabled;
+                    else if (mesh.userData.harmType === 'contam') mesh.visible = harmContamEnabled;
+                    else if (mesh.userData.harmType === 'emi') mesh.visible = harmEmiEnabled;
+                });
+                applyDiscVisibility();
             updateGlobalToggle();
         }
 
@@ -3270,6 +3339,7 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            if (isStateModeActive) adjustBottomRightPanels();
         });
 
         // --- Feature Popup & Raycast Selection System ---
@@ -3463,6 +3533,8 @@
                     ? 'Proposed Protected'
                     : targetFeature.review_status === 'assessed_protected'
                     ? 'Assessed Protected'
+                    : targetFeature.review_status === 'open'
+                    ? 'Open'
                     : targetFeature.review_status === 'assessed_open'
                     ? 'Assessed Open'
                     : targetFeature.review_status === 'under_assessment'
@@ -3499,7 +3571,15 @@
                     ? `Active challenge by ${targetFeature.dispute_details.challenger || 'Challenger'}. Justification: ${targetFeature.dispute_details.justification || 'Pending'}. Deadline: ${targetFeature.dispute_details.response_deadline || 'None'}.`
                     : 'No active disputes recorded';
 
-                if (targetFeature.articles && targetFeature.articles.length > 0) {
+                const isOrbit = targetFeature.geometry && targetFeature.geometry.type === 'orbit';
+                if (isOrbit) {
+                    reportName = `${targetFeature.name} (Orbital Domain)`;
+                    summaryText = `This orbital feature represents ${targetFeature.name} operating in lunar orbit. Coordinates are omitted for non-surface orbital dynamics. OST Article VI state authorization and supervision apply.`;
+                } else {
+                    summaryText = `This designation identifies ${targetFeature.name} as a ${categoryName} area under a Tier ${tierNum} framework. Pursuant to OST Article VI, authorizing states bear international responsibility for national activities. Operators planning activities in this vicinity must observe OST Article IX due regard obligations to avoid harmful interference.`;
+                }
+
+                if (Array.isArray(targetFeature.articles) && targetFeature.articles.length > 0) {
                     const mappedArts = targetFeature.articles.map(a => {
                         if (a === 2) return 'Article II (Non-appropriation)';
                         if (a === 3) return 'Article III (International Law & UN Charter)';
@@ -3515,35 +3595,23 @@
                 } else {
                     ostObligationsTriggeredText = 'Article IX (Due Regard & Harmful Interference)';
                 }
-
-                summaryText = `This designation identifies ${targetFeature.name} as a ${categoryName} area under a Tier ${tierNum} framework. Pursuant to OST Article VI, authorizing states bear international responsibility for national activities. Operators planning activities in this vicinity must observe OST Article IX due regard obligations to avoid harmful interference.`;
             } else {
-                const isOrbitReport = targetFeature && targetFeature.geometry && targetFeature.geometry.type === 'orbit';
-                if (isOrbitReport) {
-                    reportName = `${targetFeature.name} (Orbital Domain)`;
-                } else {
-                    const latStr = currentTelemetryLat >= 0 ? `${currentTelemetryLat.toFixed(2)}° N` : `${(-currentTelemetryLat).toFixed(2)}° S`;
-                    const lonStr = lonToDisplay(currentTelemetryLon);
-                    reportName = `Open Lunar Surface (${latStr}, ${lonStr})`;
-                }
-                categoryName = targetFeature ? getCategoryLabel(targetFeature) : 'Unassessed Area';
-                tierNum = targetFeature ? (targetFeature.tier || 3) : 3;
-                tierText = tierNum === 1
-                    ? 'Tier 1: high protection, activity requires coordination and can be challenged.'
-                    : tierNum === 2
-                    ? 'Tier 2: coordination required before proceeding.'
-                    : 'Tier 3: activity permitted, subject to the general due regard obligation under Article IX.';
-                sourceText = targetFeature ? (targetFeature.source || 'IAU / Mission Catalog') : 'Lunar Telemetry Location Survey';
-                evidenceText = targetFeature ? (targetFeature.evidence_grade === 'A' ? 'Grade A' : 'Grade B') : 'Not graded (Unassessed surface point)';
-                statusText = targetFeature ? (targetFeature.review_status ? targetFeature.review_status.toUpperCase() : 'Assessed') : 'Unassessed';
-                dateText = targetFeature ? (targetFeature.date || 'Pending') : 'N/A';
-                authText = targetFeature ? (targetFeature.designation_authority || 'N/A') : 'N/A';
-                stateResp = targetFeature ? (targetFeature.state || 'None specified') : 'None (OST Article II: Non-appropriation by claim, use or occupation)';
+                const latStr = currentTelemetryLat >= 0 ? `${currentTelemetryLat.toFixed(2)}° N` : `${(-currentTelemetryLat).toFixed(2)}° S`;
+                const lonStr = lonToDisplay(currentTelemetryLon);
+                reportName = `Open Lunar Surface (${latStr}, ${lonStr})`;
+                categoryName = 'Unassessed Area';
+                tierNum = 3;
+                tierText = 'Tier 3: activity permitted, subject to the general due regard obligation under Article IX.';
+                sourceText = 'Lunar Telemetry Location Survey';
+                evidenceText = 'Not graded (Unassessed surface point)';
+                statusText = 'Unassessed';
+                dateText = 'N/A';
+                authText = 'N/A';
+                stateResp = 'None (OST Article II: Non-appropriation by claim, use or occupation)';
                 disputeText = 'No active disputes recorded';
                 legalInstrumentText = 'Outer Space Treaty Articles II (Non-appropriation) and IX (Due Regard)';
-                summaryText = targetFeature 
-                    ? `This orbital feature represents ${targetFeature.name} operating in lunar orbit. Coordinates are omitted for non-surface orbital dynamics. OST Article VI state authorization and supervision apply.`
-                    : `This location represents unassessed open lunar surface. Under OST Article II, no part of the lunar surface is subject to national appropriation. Operators must adhere to OST Article IX due regard obligations and consult prior to undertaking activities that could cause harmful interference.`;
+                ostObligationsTriggeredText = 'Article II (Non-appropriation) & Article IX (Due Regard & Non-Interference)';
+                summaryText = `This location represents unassessed open lunar surface. Under OST Article II, no part of the lunar surface is subject to national appropriation. Operators must adhere to OST Article IX due regard obligations and consult prior to undertaking activities that could cause harmful interference.`;
             }
 
             const eventDateLine = eventDateText ? `\nEvent date: ${eventDateText}` : "";
@@ -3884,7 +3952,8 @@ function copyText() {
             for (const key in featureObjects) {
                 const entry = featureObjects[key];
                 if (entry.discObject && entry.discObject.material) {
-                    entry.discObject.material.opacity = globalLayerOpacity;
+                    const baseOp = entry.discObject.userData.baseOpacity ?? 0.5;
+                    entry.discObject.material.opacity = baseOp * (globalLayerOpacity / 0.5);
                 }
             }
 
@@ -3946,7 +4015,8 @@ function copyText() {
                 for (const id of highlightedFeatureIds) {
                     const entry = featureObjects[id];
                     if (entry && entry.discObject && entry.discObject.material) {
-                        entry.discObject.material.opacity = Math.min(1.0, globalLayerOpacity * 1.8);
+                        const baseOp = entry.discObject.userData.baseOpacity ?? 0.5;
+                        entry.discObject.material.opacity = Math.min(1.0, baseOp * (globalLayerOpacity / 0.5) * 1.8);
                     }
                 }
             }
@@ -3977,19 +4047,42 @@ function copyText() {
                 const entry = featureObjects[key];
                 const feature = FEATURES.find(f => f.id === key);
 
-                if (feature && entry.type === 'point') {
+                if (feature && entry.type === 'point' && entry.discObject && entry.basePositions) {
                     const actualR = feature.radius_km || DEFAULT_RADIUS_KM;
                     const maxR = Math.max(actualR, MIN_VISUAL_RADIUS_KM);
                     const currentR = actualR + zoomProgress * (maxR - actualR);
-                    const scaleS = currentR / actualR;
+                    const factor = currentR / maxR;
 
-                    if (entry.discObject) {
-                        entry.discObject.scale.set(scaleS, 1.0, scaleS);
+                    if (Math.abs((entry.lastFactor || 1.0) - factor) > 0.001) {
+                        entry.lastFactor = factor;
+                        const posAttr = entry.discObject.geometry.attributes.position;
+                        const baseAttr = entry.basePositions;
+                        const count = posAttr.count;
+
+                        for (let i = 0; i < count; i++) {
+                            const x0 = baseAttr.getX(i);
+                            const y0 = baseAttr.getY(i);
+                            const z0 = baseAttr.getZ(i);
+
+                            const r_xz0 = Math.sqrt(x0 * x0 + z0 * z0);
+                            if (r_xz0 < 0.000001) {
+                                posAttr.setXYZ(i, 0, 1.002, 0);
+                            } else {
+                                const theta0 = Math.atan2(r_xz0, y0);
+                                const thetaNew = theta0 * factor;
+                                const sinNew = Math.sin(thetaNew);
+                                const cosNew = Math.cos(thetaNew);
+                                const scaleXZ = (1.002 * sinNew) / r_xz0;
+
+                                posAttr.setXYZ(i, x0 * scaleXZ, 1.002 * cosNew, z0 * scaleXZ);
+                            }
+                        }
+                        posAttr.needsUpdate = true;
                     }
 
                     if (entry.label) {
                         const targetNormal = latLonToPosition(feature.lat, feature.lon, MOON_3D_RADIUS).normalize();
-                        const labelHeight = 1.005 + (currentR / MOON_RADIUS_KM) * 0.2;
+                        const labelHeight = 1.005 + (currentR / MOON_RADIUS_KM) * 0.15;
                         entry.label.position.copy(targetNormal.multiplyScalar(labelHeight));
                     }
                 }
