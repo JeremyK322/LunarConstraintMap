@@ -2986,8 +2986,11 @@
                         }
 
                         entry.discObject.userData.baseOpacity = baseOp;
-                        entry.discObject.material.map = tex;
-                        entry.discObject.material.needsUpdate = true;
+                        const isOrbitLine = entry.discObject.isLine || (feature.geometry && feature.geometry.type === 'orbit');
+                        if (!isOrbitLine) {
+                            entry.discObject.material.map = tex;
+                            entry.discObject.material.needsUpdate = true;
+                        }
                     }
                 } else {
                     featureActiveState.set(fid, false);
